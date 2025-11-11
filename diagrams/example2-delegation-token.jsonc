@@ -1,0 +1,26 @@
+{
+  "protected": {
+    "_comment": "to be base64url-encoded",
+    "alg": "dir",
+    "enc": "A128CBC-HS256",
+    "typ": "JWT",
+    "kid": "as-key-2"
+  },
+  "iv": "s99tD84KH1_kgbA2ArpUZg",
+  "ciphertext": {
+    "_comment": "to be encrypted",
+    "iss": "https://as1.example.com",
+    "sub": "user@example.com",
+    "aud": "https://res1.example.com",
+    "iat": 1760946495,
+    "exp": 1763538495,
+    "scope": "email:read email:send",
+    "delegation_key": {
+      "kty": "EC",
+      "crv": "P-256",
+      "x": "iZgQ3t5EK4rVdkex6LAGfxB0deOHtE3-vb-OBxoFv88",
+      "y": "RQVYHkEWrTR6jckD7iHXnRRs60-u9ikSfVnM4epiOLY"
+    }
+  },
+  "tag": "9Z4ONkwLwv3szT-eIKa4uQ"
+}

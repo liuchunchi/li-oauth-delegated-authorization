@@ -1,0 +1,61 @@
+{
+  "resources": [
+    "https://res1.example.com",
+    "https://res2.example.net"
+  ],
+  "authorization_servers": [
+    "https://as1.example.com",
+    "https://as2.example.net"
+  ],
+  "permissions_supported": {
+    "scopes": ["profile:read", "profile:write", "email:read", "email:write"],
+    "authorization_details": [
+      {
+        "type": "payment",
+        "actions": ["initiate", "status", "cancel"],
+        "instructedAmount": {
+          "notMoreThan": {
+            "currency": "USD",
+            "amount": "500.00"
+          }
+        }
+      }
+    ]
+  },
+  "api_permissions": {
+    "/emails/list": {
+      "scopes": ["email:read"]
+    },
+    "/balance/transfer": {
+      "authorization_details": [
+        {
+          "type": "payment",
+          "actions": ["initiate"],
+          "instructedAmount": {
+            "notMoreThan": {
+              "currency": "USD",
+              "amount": "500.00"
+            }
+          }
+        }
+      ]
+    },
+    "/balance/transfer/status": {
+      "authorization_details": [
+        {
+          "type": "payment",
+          "actions": ["status"]
+        }
+      ]
+    },
+    "/balance/transfer/cancel": {
+      "authorization_details": [
+        {
+          "type": "payment",
+          "actions": ["cancel"]
+        }
+      ]
+    }
+  },
+  "delegated_party_documentation": "https://dp.example.com/dp_documentation.html"
+}

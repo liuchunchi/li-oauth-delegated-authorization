@@ -1,0 +1,23 @@
+{
+  "protected": {
+    "_comment": "to be base64url-encoded",
+    "alg": "HS256",
+    "typ": "JWT",
+    "kid": "as-key-1"
+  },
+  "payload": {
+    "_comment": "to be base64url-encoded",
+    "iss": "https://as1.example.com",
+    "sub": "user@example.com",
+    "aud": "https://res1.example.com",
+    "iat": 1760946495,
+    "exp": 1763538495,
+    "scope": "email:read email:send",
+    "delegation_key": {
+      "kty": "RSA",
+      "n": "xoGV-drpIhwQ9Q3M5ouoA4Y76j4r0c2YcJoPT2qUd8UxV1PZH61TGZUbdUAdQLqi7Pik3GwTk34b6Xxb2-UkW3zoaBx_2FXXfVWwSVbfxi4RCbFP-rWGlbyYTRILj6CJM5JXI8VQdcSF8yfPZVytw-aKU-5k4RddKxgyMwkWNCShWPa_H2WRsDzcy88pE-8q1cg6hbaq5GTywdiSeGWrjMYebQqIN-V63bX2aiOHhFvPVpEoI7AlxlrQd7aJtFwfuRl-0FxJH-2ITrnHFZaFAdoJqvFSD3OKZNkECBpuDL-DHcZUZfEyr4Rvb3WB0iuHHfHXzhbzqAt3NbZalmdQNw",
+      "e": "AQAB"
+    }
+  },
+  "signature": "1gR7TSa8ft8Wt4ZA9HuLFTYW2uAw86X2pFRrq9jDoQQ"
+}

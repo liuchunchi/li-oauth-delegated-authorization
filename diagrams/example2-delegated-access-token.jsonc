@@ -1,0 +1,19 @@
+{
+  "protected": {
+    "_comment": "to be base64url-encoded",
+    "alg": "ES256",
+    "typ": "JWT",
+    "kid": "delegation-key-2"
+  },
+  "payload": {
+    "_comment": "to be base64url-encoded",
+    "iss": "user@example.com",
+    "sub": "https://dp1.example.com",
+    "aud": "https://res1.example.com",
+    "iat": 1760950095,
+    "exp": 1760953695,
+    "scope": "email:read",
+    "delegationToken": "eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwidHlwIjoiSldUIiwia2lkIjoiYXMta2V5LTIifQ..s99tD84KH1_kgbA2ArpUZg.DS5aM1uuKpFFacu7rIvKOYnA-6BRPy6jyZ-3uF8bpplWJkCQmsAi8KqS-qTZuHWNfIWw7ulK-a8rWhfPPfLrgdXky6Ujc_3vm5YXRXmwxlaNJlhr2LexPXsTX2wA_3aIo9c0b5kQB2MHqeI5ucJDSdERCV2AaQTgl7vRmJhZ_FAY5cnd2URHEsqnm5usrywzGMLw5CnXg2MBl1jWxiHp-PmzOmRPHks4jFV2es2jjr-yB5PlX2d-OBCU2hauM_JjtnYOhByiXmAVVE6XKjJHXYM-d5q3JheTDg5gA4f1Io38_r2KA3pW07CF94Nx3i7VRxaFRSVYuNxlEhUx0vxOIlwRBa3_ZOK4Kkg-og66ADs73RuBg91cCthbr63NfIdEXmmYKG2Nx3DehojbVKZQrg.9Z4ONkwLwv3szT-eIKa4uQ"
+  },
+  "signature": "hlxIMOUb_Wdjh53VPcvuXBwTDiGzC7O8-ofV2LAvkws-LRIqKF6WRZ3KoPG1iTEDDhel3XXAGCyfRFCMXH3KiQ"
+}

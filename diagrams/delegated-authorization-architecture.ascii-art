@@ -1,0 +1,29 @@
+           +-----------+ 1. Authorization     +---------------+
+           |           |      Request         |               |
+           |           +---------------------->               |
+           |           |                      |   Resource    |
+           |           | 2. Authorization     |     Owner     |
+           |           |      Grant           |               |
+           |           <----------------------+               |
+           |           |                      +---------------+
+           |  Client   |                                       
+           |           | 3. Authorization     +---------------+
+           |           |      Grant           |               |
+           |           +---------------------->               |
+           |           |                      | Authorization |
+           |           | 4. Delegation        |     Server    |
+           |           |      Token           |               |
+           |           <----------------------+               |
+           +--^-----+--+                      +---------------+
+              |     |5. Delegated                              
+6. Delegated  |     |     Access                               
+      Resource|     |     Token                                
+              |     |                                          
+           +--+-----v--+ 5. Delegated         +---------------+
+           |           |      Access Token    |               |
+           |           +---------------------->               |
+           | Delegated |                      |   Resource    |
+           |   Party   | 6. Protected         |    Server     |
+           |           |      Resource        |               |
+           |           <----------------------+               |
+           +-----------+                      +---------------+
