@@ -19,11 +19,11 @@
 # Change the file extension to match the format (.xml for XML, etc...)
 #
 ###
-title: "TODO - Your title"
-abbrev: "TODO - Abbreviation"
+title: 	OAuth 2.0 Delegated Authorization
+abbrev: Delegated Authorization
 category: info
 
-docname: draft-todo-yourname-protocol-latest
+docname: draft-li-oauth-delegated-authorization-latest
 submissiontype: IETF  # also: "independent", "editorial", "IAB", or "IRTF"
 number:
 date:
