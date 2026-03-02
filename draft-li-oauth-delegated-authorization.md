@@ -51,12 +51,14 @@ normative:
   RFC8392:
   RFC8414:
   RFC8615:
+  RFC8693:
   RFC8705:
   RFC9110:
   RFC9396:
   RFC9449:
   RFC9700:
   RFC9728:
+  I-D.lombardo-oauth-step-up-authz-challenge-proto:
 
 informative:
   RFC8792:
@@ -96,7 +98,7 @@ The following additional terms are used throughout this document:
 : A token created by the client using the delegation token, with permissions being a subset of the delegation token's privileges and a more limited lifespan.
 
 **Delegation Key**:
-: A cryptographic key bound to the delegation token, used by the client to sign or encrypt delegated access tokens. The delegation key is presented in the token request as the `delegation_key` parameter.
+: A cryptographic key bound to the delegation token, used by the client to sign delegated access tokens. The delegation key is presented in the token request as the `delegation_key` parameter.
 
 # Overview
 
@@ -171,6 +173,63 @@ WWW-Authenticate: Bearer delegated_party_metadata=\
   "https://dp.example.com/.well-known/oauth-delegated-party"
 ~~~
 
+# Delegation Tokens and Delegated Access Tokens
+
+This section defines the properties of delegation tokens and delegated access tokens. The delegated authorization framework uses a hierarchical token structure where tokens form a chain: a delegation token can be used to create subordinate tokens, which can either be another delegation token (to continue the chain) or a delegated access token (to access protected resources). The top-level token in the chain is issued by the authorization server, while subordinate tokens are created by clients.
+
+## Delegation Tokens
+
+A delegation token is a token that can be used to create subordinate tokens. It contains a `max_delegation_depth` claim that limits the maximum length of the delegation chain.
+
+**delegation_key**:
+: The cryptographic key bound to the delegation token, used by the client to sign subordinate tokens (either another delegation token or a delegated access token). The value is a JSON object representing the public key, using key format as defined in {{RFC7517}}. This claim MUST be present in delegation tokens. The corresponding private key is held by the client and used to create subordinate tokens. Subordinate tokens MUST include the parent delegation token in the `delegation_token` claim, creating a verifiable chain from the top-level token to the subordinate token.
+
+**max_delegation_depth**:
+: OPTIONAL. Integer value indicating the maximum depth of the delegation chain. If not present, the delegation chain is unrestricted. When a client creates a subordinate token from a delegation token:
+
+- If the parent delegation token has a `max_delegation_depth` value, the subordinate delegation token MUST have a `max_delegation_depth` value smaller than the parent's value.
+- If the parent delegation token does not have a `max_delegation_depth` value, the subordinate delegation token MAY set any `max_delegation_depth` value.
+
+When `max_delegation_depth` reaches 1, the subordinate token MUST be a delegated access token (no further delegation is allowed).
+
+The `scope` / `authorization_details`, `aud`, `exp`, and `nbf` claims MAY be present in delegation tokens and can be reduced in subordinate tokens.
+
+**scope** / **authorization_details**:
+: The scope (as defined in {{RFC8693}}) or authorization details (as defined in {{RFC9396}}) of the delegation token. When creating a subordinate token, the client MAY reduce the scope or authorization_details to a subset of the parent token's permissions.
+
+**aud**:
+: The audience of the delegation token. When creating a subordinate token, the client MAY narrow the audience to a subset of the parent token's audience.
+
+**exp**:
+: The expiration time of the delegation token. When creating a subordinate token, the client MUST set an expiration time that is no later than the parent token's expiration time.
+
+**nbf**:
+: The not-before time of the delegation token. When creating a subordinate token, the client MAY set a not-before time that is later than the parent token's not-before time.
+
+### Top Level Delegation Token
+
+The top-level delegation token is issued by the authorization server and MAY contain the `iss`, `sub`, and `jti` claims. If present, these claims apply to the entire token chain. These claims MUST NOT be present in subordinate delegation tokens or delegated access tokens.
+
+**iss**:
+: The issuer of the delegation token. This claim applies to all subordinate tokens in the chain.
+
+**sub**:
+: The subject of the delegation token, typically representing the resource owner or the client. This claim applies to all subordinate tokens in the chain.
+
+**jti**:
+: Unique identifier for the delegation token. This claim applies to all subordinate tokens in the chain.
+
+Subordinate delegation tokens and delegated access tokens MUST NOT include the `iss`, `sub`, or `jti` claims. Verifiers (resource servers and delegated parties) SHALL consider these claims from the top-level delegation token when validating the entire token chain.
+
+## Delegated Access Tokens
+
+A delegated access token is a token used to access protected resources. It cannot be used to create subordinate tokens.
+
+The `scope`, `aud`, `exp`, and `nbf` claims in delegated access tokens follow the same rules as in delegation tokens, as described in Section 6.1.
+
+**max_delegation_depth**:
+: Delegated access tokens do not need to include a `max_delegation_depth` claim, even if the parent delegation token has one. If a delegated access token includes `max_delegation_depth`, its value MUST be 0.
+
 # Acquiring Delegation Tokens
 
 The client requests a delegation token using standard OAuth 2.0 grant types with additional parameters to distinguish delegation requests from standard token requests.
@@ -181,7 +240,7 @@ For authorization code grant type, the client MUST include a `delegation=true` p
 
 Additionally, the authorization request MUST include either a `scope` parameter (as defined in {{RFC6749}} Section 3.3), an `authorization_details` parameter (as defined in "Rich Authorization Requests" {{RFC9396}}), or both, that define the permissions granted to the requested delegation token.
 
-In the token request, the client MUST include a `delegation_key` parameter with the value of the delegation key. This is normally a public key for digital signature. It can be extended to support encryption public keys, or secret keys for MAC or symmetric encryption.
+In the token request, the client MUST include a `delegation_key` parameter with the value of the delegation key. The delegation key is a public key for digital signature.
 
 Additionally, the client MAY include in the token request either a `scope` parameter, an `authorization_details` parameter, or both. The client MAY also include a `delegation=true` parameter in the token request.
 
@@ -199,7 +258,7 @@ The client creates delegated access tokens by:
 
 1. Validating the delegation token's validity and permissions.
 2. Generating a subordinate access token with (optionally) reduced privileges.
-3. Applying cryptographic protection using the delegation key (digital signature, encryption or MAC).
+3. Applying cryptographic protection using the delegation key (digital signature).
 
 The client MUST include the delegation token in the `delegation_token` attribute of the delegated access token.
 
@@ -246,7 +305,32 @@ The resource server verifies delegated access tokens by:
 
 ## Token Introspection
 
-The resource server sends the delegated access token to the authorization server via the token introspection endpoint. The authorization server verifies the delegated access token against its keys.
+The resource server sends the delegated access token to the authorization server via the token introspection endpoint {{RFC7662}}. The authorization server verifies the delegated access token against its keys.
+
+# Privacy Considerations
+
+This section describes the privacy properties of the local delegation approach defined in this specification.
+
+## Privacy Benefits
+
+When a client creates delegated access tokens locally using a delegation token, the authorization server only observes the initial delegation token request. After that, the client can independently issue subordinate tokens without further authorization server interaction. This provides the following privacy benefits:
+
+- **Minimized Authorization Server Visibility**: The authorization server does not learn which delegated parties are authorized, what resources they access, or when they access them.
+- **No Access Pattern Correlation**: The authorization server cannot track usage patterns or correlate activities across different delegated parties.
+- **Reduced Data Collection**: The authorization server stores only metadata about the initial delegation token, not about each delegated access token.
+- **Network Traffic Reduction**: Fewer network round-trips to the authorization server reduce exposure to network surveillance.
+
+## Relationship to Token Exchange
+
+Token Exchange {{RFC8693}} provides a mechanism for delegating access by having the client exchange one token for another at the authorization server. That approach requires authorization server involvement for each delegation event, which necessarily exposes delegation metadata to the authorization server. The local delegation approach in this specification performs delegation entirely on the client side after the initial token issuance, providing an alternative with different privacy characteristics.
+
+## Trade-offs
+
+While local delegation provides significant privacy benefits, implementations should consider:
+
+- **Client Responsibility**: The client must securely protect the delegation key and properly enforce delegation rules.
+- **Auditability**: Deployments requiring delegation event audits can implement client-side logging rather than relying on authorization server monitoring.
+- **Revocation**: If a delegation key is compromised, the authorization server may need to revoke the entire delegation token.
 
 # Security Considerations
 
@@ -318,7 +402,7 @@ This specification registers the following parameters in the "Hypertext Transfer
 
 ## OAuth Delegated Party Metadata Registry
 
-This specification establishes the "OAuth Delegated Party Metadata" registry for OAuth 2.0 dalagated party metadata names. The registry records the dalagated party metadata parameter and a reference to the specification that defines it.
+This specification establishes the "OAuth Delegated Party Metadata" registry for OAuth 2.0 delegated party metadata names. The registry records the delegated party metadata parameter and a reference to the specification that defines it.
 
 ### Registration Template
 
@@ -375,7 +459,7 @@ This specification establishes the "OAuth Delegated Party Metadata" registry for
 
 # Token Format
 
-The example tokens in this section are shown in Flattened JSON Serialization {{RFC7515}} {{RFC7516}}, un-base64url-encoded/unencrypted, and with comments for ease of reading. When used as JWTs {{RFC7519}}, they should be represented in Compact Serialization {{RFC7515}} {{RFC7516}}. Similarly, they can be represented as CWTs {{RFC8392}}.
+The example tokens in this section are shown in Flattened JSON Serialization {{RFC7515}} {{RFC7516}}, un-base64url-encoded and with comments for ease of reading. When used as JWTs {{RFC7519}}, they should be represented in Compact Serialization {{RFC7515}} {{RFC7516}}. Similarly, they can be represented as CWTs {{RFC8392}}.
 
 ## Example 1
 
@@ -395,12 +479,18 @@ In this example, the delegation token is a JWS token signed with HS256, and the 
 
 ## Example 2
 
-In this example, the delegation token is a JWE token encrypted with A128CBC-HS256, and the delegated access token is a JWS token signed with ES256.
+In this example, the delegation token chain consists of three tokens: a top-level delegation token issued by the authorization server, a subordinate delegation token created by the client, and a delegated access token created from the subordinate token. The top-level delegation token has `max_delegation_depth` of 3, which allows for two levels of delegation.
 
-**Delegation Token**:
+**Top-Level Delegation Token**:
 
 ~~~sourcecode
-{::include diagrams/example2-delegation-token.jsonc}
+{::include diagrams/example2-top-level-delegation-token.jsonc}
+~~~
+
+**Subordinate Delegation Token**:
+
+~~~sourcecode
+{::include diagrams/example2-subordinate-delegation-token.jsonc}
 ~~~
 
 **Delegated Access Token**:
@@ -409,11 +499,19 @@ In this example, the delegation token is a JWE token encrypted with A128CBC-HS25
 {::include diagrams/example2-delegated-access-token.jsonc}
 ~~~
 
+# Integration with Step-Up Authorization
+
+This specification can be used together with step-up authorization {{I-D.lombardo-oauth-step-up-authz-challenge-proto}}. When a resource server returns an `insufficient_authorization` error, the client can create a new delegated access token with the required permissions from its existing delegation token.
+
+This is particularly useful for AI agents that hold a delegation token. Upon receiving a step-up authorization challenge, the agent can automatically create a new delegated access token with the additional authorization_details required by the resource server, without requiring the user to re-authenticate.
+
+Resource servers that support both delegated authorization and step-up challenges SHOULD use the `body_instructions` parameter to specify the exact authorization_details or scope required.
+
 # Use Cases
 
 ## Delegating Subset of Access Rights to Specialized AI Agents
 
-Enterprise Identity and Access Management systems often employ Role Based Access Control (RBAC) or Attribute Based Access Control (ABAC), assigning a set of minimal permissions to the employee based on its role, department, or other attributes. AI Agent can be an employee's personal assistant, or a virtual employee of a certain department in general. An Agent's delegated permissions CAN be long-termed, but MUST NOT be a direct inheritance of all its owner's access right. Rather, they SHOULD be a subset of its owner, bound to specfic service/API/database/codebase according to its specialty and dedicated workflow.
+Enterprise Identity and Access Management systems often employ Role Based Access Control (RBAC) or Attribute Based Access Control (ABAC), assigning a set of minimal permissions to the employee based on their role, department, or other attributes. AI Agent can be an employee's personal assistant, or a virtual employee of a certain department in general. The permissions delegated to an AI agent CAN be long-term, but an AI agent MUST NOT directly inherit all its owner's access rights. Rather, they SHOULD be a subset of its owner, bound to specific service/API/database/codebase according to its specialty and dedicated workflow.
 
 | Role | Service / Component |
 | --- | --- |
