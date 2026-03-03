@@ -1,0 +1,18 @@
+{
+  "protected": {
+    "_comment": "to be base64url-encoded",
+    "alg": "RS256",
+    "typ": "JWT",
+    "kid": "delegation-key-2"
+  },
+  "payload": {
+    "_comment": "to be base64url-encoded",
+    "aud": "https://res1.example.com",
+    "iat": 1772181188,
+    "exp": 1772782388,
+    "max_delegation_depth": 1,
+    "scope": "email:read email:write",
+    "delegationToken": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImFzLWtleS0yIn0.eyJpc3MiOiJodHRwczovL2FzMS5leGFtcGxlLmNvbSIsInN1YiI6InVzZXJAZXhhbXBsZS5jb20iLCJhdWQiOiJodHRwczovL3JlczEuZXhhbXBsZS5jb20iLCJpYXQiOjE3NzIxNzc1ODgsImV4cCI6MTc3NDc2OTU4OCwic2NvcGUiOiJlbWFpbDpyZWFkIGVtYWlsOndyaXRlIGVtYWlsOnNlbmQiLCJkZWxlZ2F0aW9uX2tleSI6eyJrdHkiOiJSU0EiLCJuIjoiM08xRVZhLV96c0VOT2h5bHE5OXB1S2pGNk5CcThTOE50dzlzdWZ5Q0I5THJUU3MteFJvRFE3WDZyWWJQRU9uNUUtNkFTWnlVVzJ2RnhMYWNqMFdpcjA1aHpubG5mUkxSVG1KaHVkNGltNUNPZkFodWlQZUwwTWJzM1dGTGRCZldWR1hTUDJPNVVOa2Q3ZEoyS3F1ZHF4TkY4MU5ydDUxUnBtUFI1OXBVWlMzUkVmQVlndHFoUTA3V3VDVHpkMlZwRnR0UEZ1ckRTaVdjcml5RUxOZGdzVDl3YXAwbnljZVNWTFFnWTlaZ1IwVnZzbUhqX0xVS2llMXQ1UkNqVHNhTUhKSDZ4M1FJMHRqS0c5UHNiaWwwT1JsaEE5V0VnT082RTZLT0NfU3RFQm5LX050YjJBckdQRGpsTlB6VHFXT2VlZXY4NE1NOFZYZFJ6cFRMT3JSbUhRIiwiZSI6IkFRQUIifSwibWF4X2RlbGVnYXRpb25fZGVwdGgiOjN9.p1OjJQ2tASuFPPCXzdbuSHaZiPTF2jM1Z_My2_qPx0IAAJJ5RVo9Km2hFeXjqqGcjkG5wEFxMw_q8JO48O9bVaKNBa1k_-UoBxf5KlMpldMFIUyV4D8Sugshh73iqVii5HW2MY4uS5Gj46GDUcX1NQRg8LW6Wa4zso0SPfIfunXF0dvBG24cCUoIFOr1NzryZ7OcVt9kdC4_uXGoSmjtGl1XsRvgb216fZFuZV0F88zWFsDcBZn4i8qGcBS2XAHjW4jbH7Y1O8dvl2h0afftmNkG2ZgHPl3phj_i-unQsAxhCUI_8MjtfF5iwe586uQw_1iED2IUlEXOgX-Ld5GgTw"
+  },
+  "signature": "lnf8Wz5M_B4dVTOOjT0aQa0ZSqEbTZVGb1HU_dk1tJ4eCbkCB8lmO0wJXc07Ys8gKqqb3TS4tKUbnwwKo3_Dw3FGYjbDqDE7rBtdc0lqi6fKSecff2ujVCi2U2dLjX78_h7U0LP1XbJuhkjdBYa-_mwiygAXf0j8cilXTigbTWJfgqcziVmkJzl9a_5HJ8HYF5ohdGmVBhOfyRrwGikYoHEQB6Ye_6jwTD_IQsUJe0eYdD4xAdA7C2awZAvhdYduKXit7WSyGuEhbyKopsm6WVZz4BkjWDjcJ2S7Xjb6RxPCGc_nNiAMsGT1nG9MIj-oGYy8gIWPSLEyF_6sk8hiaQ"
+}

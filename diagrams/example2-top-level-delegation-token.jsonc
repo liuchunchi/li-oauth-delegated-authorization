@@ -1,0 +1,24 @@
+{
+  "protected": {
+    "_comment": "to be base64url-encoded",
+    "alg": "RS256",
+    "typ": "JWT",
+    "kid": "as-key-2"
+  },
+  "payload": {
+    "_comment": "to be base64url-encoded",
+    "iss": "https://as1.example.com",
+    "sub": "user@example.com",
+    "aud": "https://res1.example.com",
+    "iat": 1772177588,
+    "exp": 1774769588,
+    "scope": "email:read email:write email:send",
+    "delegation_key": {
+      "kty": "RSA",
+      "n": "3O1EVa-_zsENOhylq99puKjF6NBq8S8Ntw9sufyCB9LrTSs-xRoDQ7X6rYbPEOn5E-6ASZyUW2vFxLacj0Wir05hznlnfRLRTmJhud4im5COfAhuiPeL0Mbs3WFLdBfWVGXSP2O5UNkd7dJ2KqudqxNF81Nrt51RpmPR59pUZS3REfAYgtqhQ07WuCTzd2VpFttPFurDSiWcriyELNdgsT9wap0nyceSVLQgY9ZgR0VvsmHj_LUKie1t5RCjTsaMHJH6x3QI0tjKG9Psbil0ORlhA9WEgOO6E6KOC_StEBnK_Ntb2ArGPDjlNPzTqWOeeev84MM8VXdRzpTLOrRmHQ",
+      "e": "AQAB"
+    },
+    "max_delegation_depth": 3
+  },
+  "signature": "p1OjJQ2tASuFPPCXzdbuSHaZiPTF2jM1Z_My2_qPx0IAAJJ5RVo9Km2hFeXjqqGcjkG5wEFxMw_q8JO48O9bVaKNBa1k_-UoBxf5KlMpldMFIUyV4D8Sugshh73iqVii5HW2MY4uS5Gj46GDUcX1NQRg8LW6Wa4zso0SPfIfunXF0dvBG24cCUoIFOr1NzryZ7OcVt9kdC4_uXGoSmjtGl1XsRvgb216fZFuZV0F88zWFsDcBZn4i8qGcBS2XAHjW4jbH7Y1O8dvl2h0afftmNkG2ZgHPl3phj_i-unQsAxhCUI_8MjtfF5iwe586uQw_1iED2IUlEXOgX-Ld5GgTw"
+}
