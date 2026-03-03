@@ -19,14 +19,14 @@
     Python 3.12.12
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
-    intervaltree 3.1.0
+    intervaltree 3.2.1
     Jinja2 3.1.6
-    lxml 5.3.1
-    platformdirs 4.5.0
+    lxml 6.0.2
+    platformdirs 4.5.1
     pycountry 24.6.1
-    PyYAML 6.0.2
+    PyYAML 6.0.3
     requests 2.32.5
-    wcwidth 0.2.14
+    wcwidth 0.3.0
 -->
 <link href="draft-li-oauth-delegated-authorization.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
@@ -167,7 +167,7 @@
   font-weight: 400;
   font-display: swap;
   src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin-ext.woff2') format('woff2');
-  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 @font-face {
   font-family: 'Oxygen Mono';
@@ -175,7 +175,8 @@
   font-weight: 400;
   font-display: swap;
   src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 }
 
 @font-face {
@@ -567,6 +568,7 @@ aside, blockquote {
 }
 blockquote {
   margin: 1em 0;
+  border-left: 2px var(--pilcrow-strong) solid;
 }
 cite {
   display: block;
@@ -637,7 +639,7 @@ a.pilcrow {
   }
 }
 @media not print {
-  :hover > a.pilcrow {
+  :hover > a.pilcrow, a.pilcrow:focus {
     opacity: 1;
   }
   a.pilcrow[href]:hover {
@@ -1045,11 +1047,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">Delegated-Auth</td>
-<td class="right">November 2025</td>
+<td class="right">March 2026</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Li, et al.</td>
-<td class="center">Expires 15 May 2026</td>
+<td class="center">Expires 4 September 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1062,12 +1064,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-li-oauth-delegated-authorization-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-11-11" class="published">11 November 2025</time>
+<time datetime="2026-03-03" class="published">3 March 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-05-15">15 May 2026</time></dd>
+<dd class="expires"><time datetime="2026-09-04">4 September 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1129,7 +1131,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 15 May 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 4 September 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1138,7 +1140,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
         </h2>
 <p id="section-boilerplate.2-1">
-            Copyright (c) 2025 IETF Trust and the persons identified as the
+            Copyright (c) 2026 IETF Trust and the persons identified as the
             document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.2-2">
             This document is subject to BCP 78 and the IETF Trust's Legal
@@ -1185,102 +1187,135 @@ svg :is([fill="white"], [fill^="#fff"]) {
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
-            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-acquiring-delegation-tokens" class="internal xref">Acquiring Delegation Tokens</a></p>
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-delegation-tokens-and-deleg" class="internal xref">Delegation Tokens and Delegated Access Tokens</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1">
-                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="auto internal xref">6.1</a>.  <a href="#name-authorization-code-grant" class="internal xref">Authorization Code Grant</a></p>
+                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="auto internal xref">6.1</a>.  <a href="#name-delegation-tokens" class="internal xref">Delegation Tokens</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1.2.1">
+                    <p id="section-toc.1-1.6.2.1.2.1.1"><a href="#section-6.1.1" class="auto internal xref">6.1.1</a>.  <a href="#name-top-level-delegation-token" class="internal xref">Top Level Delegation Token</a></p>
+</li>
+                </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2">
-                <p id="section-toc.1-1.6.2.2.1"><a href="#section-6.2" class="auto internal xref">6.2</a>.  <a href="#name-other-grant-types" class="internal xref">Other Grant Types</a></p>
+                <p id="section-toc.1-1.6.2.2.1"><a href="#section-6.2" class="auto internal xref">6.2</a>.  <a href="#name-delegated-access-tokens" class="internal xref">Delegated Access Tokens</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
-            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-creating-delegated-access-t" class="internal xref">Creating Delegated Access Tokens</a></p>
-</li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
-            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-using-delegated-access-toke" class="internal xref">Using Delegated Access Tokens</a></p>
-</li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
-            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-verification-of-delegated-a" class="internal xref">Verification of Delegated Access Tokens</a></p>
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-acquiring-delegation-tokens" class="internal xref">Acquiring Delegation Tokens</a></p>
 <ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.1">
-                <p id="section-toc.1-1.9.2.1.1"><a href="#section-9.1" class="auto internal xref">9.1</a>.  <a href="#name-local-verification" class="internal xref">Local Verification</a></p>
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1">
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-authorization-code-grant" class="internal xref">Authorization Code Grant</a></p>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.2">
-                <p id="section-toc.1-1.9.2.2.1"><a href="#section-9.2" class="auto internal xref">9.2</a>.  <a href="#name-token-introspection" class="internal xref">Token Introspection</a></p>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2">
+                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-other-grant-types" class="internal xref">Other Grant Types</a></p>
 </li>
             </ul>
 </li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-creating-delegated-access-t" class="internal xref">Creating Delegated Access Tokens</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-using-delegated-access-toke" class="internal xref">Using Delegated Access Tokens</a></p>
+</li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
-            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-verification-of-delegated-a" class="internal xref">Verification of Delegated Access Tokens</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.1">
+                <p id="section-toc.1-1.10.2.1.1"><a href="#section-10.1" class="auto internal xref">10.1</a>.  <a href="#name-local-verification" class="internal xref">Local Verification</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.2">
+                <p id="section-toc.1-1.10.2.2.1"><a href="#section-10.2" class="auto internal xref">10.2</a>.  <a href="#name-token-introspection" class="internal xref">Token Introspection</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
-            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-operational-considerations" class="internal xref">Operational Considerations</a></p>
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-privacy-considerations" class="internal xref">Privacy Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.1">
+                <p id="section-toc.1-1.11.2.1.1"><a href="#section-11.1" class="auto internal xref">11.1</a>.  <a href="#name-privacy-benefits" class="internal xref">Privacy Benefits</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.2">
+                <p id="section-toc.1-1.11.2.2.1"><a href="#section-11.2" class="auto internal xref">11.2</a>.  <a href="#name-relationship-to-token-excha" class="internal xref">Relationship to Token Exchange</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.3">
+                <p id="section-toc.1-1.11.2.3.1"><a href="#section-11.3" class="auto internal xref">11.3</a>.  <a href="#name-trade-offs" class="internal xref">Trade-offs</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
-            <p id="section-toc.1-1.12.1"><a href="#section-12" class="auto internal xref">12</a>. <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+            <p id="section-toc.1-1.12.1"><a href="#section-12" class="auto internal xref">12</a>. <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
+            <p id="section-toc.1-1.13.1"><a href="#section-13" class="auto internal xref">13</a>. <a href="#name-operational-considerations" class="internal xref">Operational Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14">
+            <p id="section-toc.1-1.14.1"><a href="#section-14" class="auto internal xref">14</a>. <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
 <ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.1">
-                <p id="section-toc.1-1.12.2.1.1"><a href="#section-12.1" class="auto internal xref">12.1</a>.  <a href="#name-well-known-uris-registry" class="internal xref">Well-Known URIs Registry</a></p>
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.1">
+                <p id="section-toc.1-1.14.2.1.1"><a href="#section-14.1" class="auto internal xref">14.1</a>.  <a href="#name-well-known-uris-registry" class="internal xref">Well-Known URIs Registry</a></p>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.2">
-                <p id="section-toc.1-1.12.2.2.1"><a href="#section-12.2" class="auto internal xref">12.2</a>.  <a href="#name-oauth-parameters-registry" class="internal xref">OAuth Parameters Registry</a></p>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.2">
+                <p id="section-toc.1-1.14.2.2.1"><a href="#section-14.2" class="auto internal xref">14.2</a>.  <a href="#name-oauth-parameters-registry" class="internal xref">OAuth Parameters Registry</a></p>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.3">
-                <p id="section-toc.1-1.12.2.3.1"><a href="#section-12.3" class="auto internal xref">12.3</a>.  <a href="#name-oauth-access-token-types-re" class="internal xref">OAuth Access Token Types Registry</a></p>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.3">
+                <p id="section-toc.1-1.14.2.3.1"><a href="#section-14.3" class="auto internal xref">14.3</a>.  <a href="#name-oauth-access-token-types-re" class="internal xref">OAuth Access Token Types Registry</a></p>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.4">
-                <p id="section-toc.1-1.12.2.4.1"><a href="#section-12.4" class="auto internal xref">12.4</a>.  <a href="#name-http-field-name-registry" class="internal xref">HTTP Field Name Registry</a></p>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.4">
+                <p id="section-toc.1-1.14.2.4.1"><a href="#section-14.4" class="auto internal xref">14.4</a>.  <a href="#name-http-field-name-registry" class="internal xref">HTTP Field Name Registry</a></p>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.5">
-                <p id="section-toc.1-1.12.2.5.1"><a href="#section-12.5" class="auto internal xref">12.5</a>.  <a href="#name-oauth-delegated-party-metad" class="internal xref">OAuth Delegated Party Metadata Registry</a></p>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.5">
+                <p id="section-toc.1-1.14.2.5.1"><a href="#section-14.5" class="auto internal xref">14.5</a>.  <a href="#name-oauth-delegated-party-metad" class="internal xref">OAuth Delegated Party Metadata Registry</a></p>
 <ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.5.2.1">
-                    <p id="section-toc.1-1.12.2.5.2.1.1"><a href="#section-12.5.1" class="auto internal xref">12.5.1</a>.  <a href="#name-registration-template" class="internal xref">Registration Template</a></p>
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.5.2.1">
+                    <p id="section-toc.1-1.14.2.5.2.1.1"><a href="#section-14.5.1" class="auto internal xref">14.5.1</a>.  <a href="#name-registration-template" class="internal xref">Registration Template</a></p>
 </li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.5.2.2">
-                    <p id="section-toc.1-1.12.2.5.2.2.1"><a href="#section-12.5.2" class="auto internal xref">12.5.2</a>.  <a href="#name-initial-registry-contents" class="internal xref">Initial Registry Contents</a></p>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.5.2.2">
+                    <p id="section-toc.1-1.14.2.5.2.2.1"><a href="#section-14.5.2" class="auto internal xref">14.5.2</a>.  <a href="#name-initial-registry-contents" class="internal xref">Initial Registry Contents</a></p>
 </li>
                 </ul>
 </li>
             </ul>
 </li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
-            <p id="section-toc.1-1.13.1"><a href="#section-13" class="auto internal xref">13</a>. <a href="#name-references" class="internal xref">References</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.1">
-                <p id="section-toc.1-1.13.2.1.1"><a href="#section-13.1" class="auto internal xref">13.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.2">
-                <p id="section-toc.1-1.13.2.2.1"><a href="#section-13.2" class="auto internal xref">13.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
-</li>
-            </ul>
-</li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14">
-            <p id="section-toc.1-1.14.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-token-format" class="internal xref">Token Format</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.1">
-                <p id="section-toc.1-1.14.2.1.1"><a href="#appendix-A.1" class="auto internal xref">A.1</a>.  <a href="#name-example-1" class="internal xref">Example 1</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.2">
-                <p id="section-toc.1-1.14.2.2.1"><a href="#appendix-A.2" class="auto internal xref">A.2</a>.  <a href="#name-example-2" class="internal xref">Example 2</a></p>
-</li>
-            </ul>
-</li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15">
-            <p id="section-toc.1-1.15.1"><a href="#appendix-B" class="auto internal xref">Appendix B</a>.  <a href="#name-use-cases" class="internal xref">Use Cases</a></p>
+            <p id="section-toc.1-1.15.1"><a href="#section-15" class="auto internal xref">15</a>. <a href="#name-references" class="internal xref">References</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.1">
-                <p id="section-toc.1-1.15.2.1.1"><a href="#appendix-B.1" class="auto internal xref">B.1</a>.  <a href="#name-delegating-subset-of-access" class="internal xref">Delegating Subset of Access Rights to Specialized AI Agents</a></p>
+                <p id="section-toc.1-1.15.2.1.1"><a href="#section-15.1" class="auto internal xref">15.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.2">
-                <p id="section-toc.1-1.15.2.2.1"><a href="#appendix-B.2" class="auto internal xref">B.2</a>.  <a href="#name-thirdparty-analytics-platfo" class="internal xref">Third‑Party Analytics Platform Integrated in an Enterprise SaaS</a></p>
+                <p id="section-toc.1-1.15.2.2.1"><a href="#section-15.2" class="auto internal xref">15.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.16">
-            <p id="section-toc.1-1.16.1"><a href="#appendix-C" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
+            <p id="section-toc.1-1.16.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-token-format" class="internal xref">Token Format</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.16.2.1">
+                <p id="section-toc.1-1.16.2.1.1"><a href="#appendix-A.1" class="auto internal xref">A.1</a>.  <a href="#name-example-1" class="internal xref">Example 1</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.16.2.2">
+                <p id="section-toc.1-1.16.2.2.1"><a href="#appendix-A.2" class="auto internal xref">A.2</a>.  <a href="#name-example-2" class="internal xref">Example 2</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.17">
+            <p id="section-toc.1-1.17.1"><a href="#appendix-B" class="auto internal xref">Appendix B</a>.  <a href="#name-integration-with-step-up-au" class="internal xref">Integration with Step-Up Authorization</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.18">
+            <p id="section-toc.1-1.18.1"><a href="#appendix-C" class="auto internal xref">Appendix C</a>.  <a href="#name-use-cases" class="internal xref">Use Cases</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.18.2.1">
+                <p id="section-toc.1-1.18.2.1.1"><a href="#appendix-C.1" class="auto internal xref">C.1</a>.  <a href="#name-delegating-subset-of-access" class="internal xref">Delegating Subset of Access Rights to Specialized AI Agents</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.18.2.2">
+                <p id="section-toc.1-1.18.2.2.1"><a href="#appendix-C.2" class="auto internal xref">C.2</a>.  <a href="#name-thirdparty-analytics-platfo" class="internal xref">Third‑Party Analytics Platform Integrated in an Enterprise SaaS</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.19">
+            <p id="section-toc.1-1.19.1"><a href="#appendix-D" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
 </li>
         </ul>
 </nav>
@@ -1341,7 +1376,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 <dt id="section-3-3.9">
 <strong>Delegation Key</strong>:</dt>
         <dd style="margin-left: 1.5em" id="section-3-3.10">
-          <p id="section-3-3.10.1">A cryptographic key bound to the delegation token, used by the client to sign or encrypt delegated access tokens. The delegation key is presented in the token request as the <code>delegation_key</code> parameter.<a href="#section-3-3.10.1" class="pilcrow">¶</a></p>
+          <p id="section-3-3.10.1">A cryptographic key bound to the delegation token, used by the client to sign delegated access tokens. The delegation key is presented in the token request as the <code>delegation_key</code> parameter.<a href="#section-3-3.10.1" class="pilcrow">¶</a></p>
 </dd>
       <dd class="break"></dd>
 </dl>
@@ -1614,403 +1649,572 @@ WWW-Authenticate: Bearer delegated_party_metadata=\
 </div>
 </section>
 </div>
-<div id="acquiring-delegation-tokens">
+<div id="delegation-tokens-and-delegated-access-tokens">
 <section id="section-6">
-      <h2 id="name-acquiring-delegation-tokens">
-<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-acquiring-delegation-tokens" class="section-name selfRef">Acquiring Delegation Tokens</a>
+      <h2 id="name-delegation-tokens-and-deleg">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-delegation-tokens-and-deleg" class="section-name selfRef">Delegation Tokens and Delegated Access Tokens</a>
       </h2>
-<p id="section-6-1">The client requests a delegation token using standard OAuth 2.0 grant types with additional parameters to distinguish delegation requests from standard token requests.<a href="#section-6-1" class="pilcrow">¶</a></p>
-<div id="authorization-code-grant">
+<p id="section-6-1">This section defines the properties of delegation tokens and delegated access tokens. The delegated authorization framework uses a hierarchical token structure where tokens form a chain: a delegation token can be used to create subordinate tokens, which can either be another delegation token (to continue the chain) or a delegated access token (to access protected resources). The top-level token in the chain is issued by the authorization server, while subordinate tokens are created by clients.<a href="#section-6-1" class="pilcrow">¶</a></p>
+<div id="delegation-tokens">
 <section id="section-6.1">
-        <h3 id="name-authorization-code-grant">
-<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-authorization-code-grant" class="section-name selfRef">Authorization Code Grant</a>
+        <h3 id="name-delegation-tokens">
+<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-delegation-tokens" class="section-name selfRef">Delegation Tokens</a>
         </h3>
-<p id="section-6.1-1">For authorization code grant type, the client <span class="bcp14">MUST</span> include a <code>delegation=true</code> parameter in the authorization request to indicate that the client is requesting a delegation token instead of an OAuth 2.0 access token.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
-<p id="section-6.1-2">Additionally, the authorization request <span class="bcp14">MUST</span> include either a <code>scope</code> parameter (as defined in <span>[<a href="#RFC6749" class="cite xref">RFC6749</a>]</span> Section 3.3), an <code>authorization_details</code> parameter (as defined in "Rich Authorization Requests" <span>[<a href="#RFC9396" class="cite xref">RFC9396</a>]</span>), or both, that define the permissions granted to the requested delegation token.<a href="#section-6.1-2" class="pilcrow">¶</a></p>
-<p id="section-6.1-3">In the token request, the client <span class="bcp14">MUST</span> include a <code>delegation_key</code> parameter with the value of the delegation key. This is normally a public key for digital signature. It can be extended to support encryption public keys, or secret keys for MAC or symmetric encryption.<a href="#section-6.1-3" class="pilcrow">¶</a></p>
-<p id="section-6.1-4">Additionally, the client <span class="bcp14">MAY</span> include in the token request either a <code>scope</code> parameter, an <code>authorization_details</code> parameter, or both. The client <span class="bcp14">MAY</span> also include a <code>delegation=true</code> parameter in the token request.<a href="#section-6.1-4" class="pilcrow">¶</a></p>
-<p id="section-6.1-5">In the token response, the authorization server <span class="bcp14">MUST</span> include an <code>access_token</code> attribute whose value is the delegation token, and <span class="bcp14">MUST</span> include a <code>token_type</code> attribute valued <code>"Delegation"</code>, and <span class="bcp14">MAY</span> include a <code>refresh_token</code> attribute which is the refresh token for obtaining a new delegation token via the refresh token grant.<a href="#section-6.1-5" class="pilcrow">¶</a></p>
-<p id="section-6.1-6">Other procedures of the authorization code grant are as described in <span>[<a href="#RFC6749" class="cite xref">RFC6749</a>]</span>. Use of Proof Key for Code Exchange (PKCE) <span>[<a href="#RFC7636" class="cite xref">RFC7636</a>]</span> is <span class="bcp14">RECOMMENDED</span>.<a href="#section-6.1-6" class="pilcrow">¶</a></p>
+<p id="section-6.1-1">A delegation token is a token that can be used to create subordinate tokens. It contains a <code>max_delegation_depth</code> claim that limits the maximum length of the delegation chain.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-6.1-2">
+          <dt id="section-6.1-2.1">
+<strong>delegation_key</strong>:</dt>
+          <dd style="margin-left: 1.5em" id="section-6.1-2.2">
+            <p id="section-6.1-2.2.1">The cryptographic key bound to the delegation token, used by the client to sign subordinate tokens (either another delegation token or a delegated access token). The value is a JSON object representing the public key, using key format as defined in <span>[<a href="#RFC7517" class="cite xref">RFC7517</a>]</span>. This claim <span class="bcp14">MUST</span> be present in delegation tokens. The corresponding private key is held by the client and used to create subordinate tokens. Subordinate tokens <span class="bcp14">MUST</span> include the parent delegation token in the <code>delegation_token</code> claim, creating a verifiable chain from the top-level token to the subordinate token.<a href="#section-6.1-2.2.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-6.1-2.3">
+<strong>max_delegation_depth</strong>:</dt>
+          <dd style="margin-left: 1.5em" id="section-6.1-2.4">
+            <p id="section-6.1-2.4.1"><span class="bcp14">OPTIONAL</span>. Integer value indicating the maximum depth of the delegation chain. If not present, the delegation chain is unrestricted. When a client creates a subordinate token from a delegation token:<a href="#section-6.1-2.4.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+</dl>
+<ul class="normal">
+<li class="normal" id="section-6.1-3.1">
+            <p id="section-6.1-3.1.1">If the parent delegation token has a <code>max_delegation_depth</code> value, the subordinate delegation token <span class="bcp14">MUST</span> have a <code>max_delegation_depth</code> value smaller than the parent's value.<a href="#section-6.1-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-6.1-3.2">
+            <p id="section-6.1-3.2.1">If the parent delegation token does not have a <code>max_delegation_depth</code> value, the subordinate delegation token <span class="bcp14">MAY</span> set any <code>max_delegation_depth</code> value.<a href="#section-6.1-3.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-6.1-4">When <code>max_delegation_depth</code> reaches 1, the subordinate token <span class="bcp14">MUST</span> be a delegated access token (no further delegation is allowed).<a href="#section-6.1-4" class="pilcrow">¶</a></p>
+<p id="section-6.1-5">The <code>scope</code> / <code>authorization_details</code>, <code>aud</code>, <code>exp</code>, and <code>nbf</code> claims <span class="bcp14">MAY</span> be present in delegation tokens and can be reduced in subordinate tokens.<a href="#section-6.1-5" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-6.1-6">
+          <dt id="section-6.1-6.1">
+<strong>scope</strong> / <strong>authorization_details</strong>:</dt>
+          <dd style="margin-left: 1.5em" id="section-6.1-6.2">
+            <p id="section-6.1-6.2.1">The scope (as defined in <span>[<a href="#RFC8693" class="cite xref">RFC8693</a>]</span>) or authorization details (as defined in <span>[<a href="#RFC9396" class="cite xref">RFC9396</a>]</span>) of the delegation token. When creating a subordinate token, the client <span class="bcp14">MAY</span> reduce the scope or authorization_details to a subset of the parent token's permissions.<a href="#section-6.1-6.2.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-6.1-6.3">
+<strong>aud</strong>:</dt>
+          <dd style="margin-left: 1.5em" id="section-6.1-6.4">
+            <p id="section-6.1-6.4.1">The audience of the delegation token. When creating a subordinate token, the client <span class="bcp14">MAY</span> narrow the audience to a subset of the parent token's audience.<a href="#section-6.1-6.4.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-6.1-6.5">
+<strong>exp</strong>:</dt>
+          <dd style="margin-left: 1.5em" id="section-6.1-6.6">
+            <p id="section-6.1-6.6.1">The expiration time of the delegation token. When creating a subordinate token, the client <span class="bcp14">MUST</span> set an expiration time that is no later than the parent token's expiration time.<a href="#section-6.1-6.6.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-6.1-6.7">
+<strong>nbf</strong>:</dt>
+          <dd style="margin-left: 1.5em" id="section-6.1-6.8">
+            <p id="section-6.1-6.8.1">The not-before time of the delegation token. When creating a subordinate token, the client <span class="bcp14">MAY</span> set a not-before time that is later than the parent token's not-before time.<a href="#section-6.1-6.8.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+</dl>
+<div id="top-level-delegation-token">
+<section id="section-6.1.1">
+          <h4 id="name-top-level-delegation-token">
+<a href="#section-6.1.1" class="section-number selfRef">6.1.1. </a><a href="#name-top-level-delegation-token" class="section-name selfRef">Top Level Delegation Token</a>
+          </h4>
+<p id="section-6.1.1-1">The top-level delegation token is issued by the authorization server and <span class="bcp14">MAY</span> contain the <code>iss</code>, <code>sub</code>, and <code>jti</code> claims. If present, these claims apply to the entire token chain. These claims <span class="bcp14">MUST NOT</span> be present in subordinate delegation tokens or delegated access tokens.<a href="#section-6.1.1-1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-6.1.1-2">
+            <dt id="section-6.1.1-2.1">
+<strong>iss</strong>:</dt>
+            <dd style="margin-left: 1.5em" id="section-6.1.1-2.2">
+              <p id="section-6.1.1-2.2.1">The issuer of the delegation token. This claim applies to all subordinate tokens in the chain.<a href="#section-6.1.1-2.2.1" class="pilcrow">¶</a></p>
+</dd>
+            <dd class="break"></dd>
+<dt id="section-6.1.1-2.3">
+<strong>sub</strong>:</dt>
+            <dd style="margin-left: 1.5em" id="section-6.1.1-2.4">
+              <p id="section-6.1.1-2.4.1">The subject of the delegation token, typically representing the resource owner or the client. This claim applies to all subordinate tokens in the chain.<a href="#section-6.1.1-2.4.1" class="pilcrow">¶</a></p>
+</dd>
+            <dd class="break"></dd>
+<dt id="section-6.1.1-2.5">
+<strong>jti</strong>:</dt>
+            <dd style="margin-left: 1.5em" id="section-6.1.1-2.6">
+              <p id="section-6.1.1-2.6.1">Unique identifier for the delegation token. This claim applies to all subordinate tokens in the chain.<a href="#section-6.1.1-2.6.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+</dl>
+<p id="section-6.1.1-3">Subordinate delegation tokens and delegated access tokens <span class="bcp14">MUST NOT</span> include the <code>iss</code>, <code>sub</code>, or <code>jti</code> claims. Verifiers (resource servers and delegated parties) <span class="bcp14">SHALL</span> consider these claims from the top-level delegation token when validating the entire token chain.<a href="#section-6.1.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="delegated-access-tokens">
+<section id="section-6.2">
+        <h3 id="name-delegated-access-tokens">
+<a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-delegated-access-tokens" class="section-name selfRef">Delegated Access Tokens</a>
+        </h3>
+<p id="section-6.2-1">A delegated access token is a token used to access protected resources. It cannot be used to create subordinate tokens.<a href="#section-6.2-1" class="pilcrow">¶</a></p>
+<p id="section-6.2-2">The <code>scope</code>, <code>aud</code>, <code>exp</code>, and <code>nbf</code> claims in delegated access tokens follow the same rules as in delegation tokens, as described in Section 6.1.<a href="#section-6.2-2" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-6.2-3">
+          <dt id="section-6.2-3.1">
+<strong>max_delegation_depth</strong>:</dt>
+          <dd style="margin-left: 1.5em" id="section-6.2-3.2">
+            <p id="section-6.2-3.2.1">Delegated access tokens do not need to include a <code>max_delegation_depth</code> claim, even if the parent delegation token has one. If a delegated access token includes <code>max_delegation_depth</code>, its value <span class="bcp14">MUST</span> be 0.<a href="#section-6.2-3.2.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+</dl>
+</section>
+</div>
+</section>
+</div>
+<div id="acquiring-delegation-tokens">
+<section id="section-7">
+      <h2 id="name-acquiring-delegation-tokens">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-acquiring-delegation-tokens" class="section-name selfRef">Acquiring Delegation Tokens</a>
+      </h2>
+<p id="section-7-1">The client requests a delegation token using standard OAuth 2.0 grant types with additional parameters to distinguish delegation requests from standard token requests.<a href="#section-7-1" class="pilcrow">¶</a></p>
+<div id="authorization-code-grant">
+<section id="section-7.1">
+        <h3 id="name-authorization-code-grant">
+<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-authorization-code-grant" class="section-name selfRef">Authorization Code Grant</a>
+        </h3>
+<p id="section-7.1-1">For authorization code grant type, the client <span class="bcp14">MUST</span> include a <code>delegation=true</code> parameter in the authorization request to indicate that the client is requesting a delegation token instead of an OAuth 2.0 access token.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
+<p id="section-7.1-2">Additionally, the authorization request <span class="bcp14">MUST</span> include either a <code>scope</code> parameter (as defined in <span>[<a href="#RFC6749" class="cite xref">RFC6749</a>]</span> Section 3.3), an <code>authorization_details</code> parameter (as defined in "Rich Authorization Requests" <span>[<a href="#RFC9396" class="cite xref">RFC9396</a>]</span>), or both, that define the permissions granted to the requested delegation token.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
+<p id="section-7.1-3">In the token request, the client <span class="bcp14">MUST</span> include a <code>delegation_key</code> parameter with the value of the delegation key. The delegation key is a public key for digital signature.<a href="#section-7.1-3" class="pilcrow">¶</a></p>
+<p id="section-7.1-4">Additionally, the client <span class="bcp14">MAY</span> include in the token request either a <code>scope</code> parameter, an <code>authorization_details</code> parameter, or both. The client <span class="bcp14">MAY</span> also include a <code>delegation=true</code> parameter in the token request.<a href="#section-7.1-4" class="pilcrow">¶</a></p>
+<p id="section-7.1-5">In the token response, the authorization server <span class="bcp14">MUST</span> include an <code>access_token</code> attribute whose value is the delegation token, and <span class="bcp14">MUST</span> include a <code>token_type</code> attribute valued <code>"Delegation"</code>, and <span class="bcp14">MAY</span> include a <code>refresh_token</code> attribute which is the refresh token for obtaining a new delegation token via the refresh token grant.<a href="#section-7.1-5" class="pilcrow">¶</a></p>
+<p id="section-7.1-6">Other procedures of the authorization code grant are as described in <span>[<a href="#RFC6749" class="cite xref">RFC6749</a>]</span>. Use of Proof Key for Code Exchange (PKCE) <span>[<a href="#RFC7636" class="cite xref">RFC7636</a>]</span> is <span class="bcp14">RECOMMENDED</span>.<a href="#section-7.1-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="other-grant-types">
-<section id="section-6.2">
+<section id="section-7.2">
         <h3 id="name-other-grant-types">
-<a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-other-grant-types" class="section-name selfRef">Other Grant Types</a>
+<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-other-grant-types" class="section-name selfRef">Other Grant Types</a>
         </h3>
-<p id="section-6.2-1">Other OAuth 2.0 grant types, such as the refresh token grant or client credentials grant, <span class="bcp14">MAY</span> support delegated authorization by including the <code>delegation</code> and <code>delegation_key</code> parameters when applicable. The authorization server <span class="bcp14">MUST</span> validate that the client is authorized to request delegation tokens using the given grant type.<a href="#section-6.2-1" class="pilcrow">¶</a></p>
+<p id="section-7.2-1">Other OAuth 2.0 grant types, such as the refresh token grant or client credentials grant, <span class="bcp14">MAY</span> support delegated authorization by including the <code>delegation</code> and <code>delegation_key</code> parameters when applicable. The authorization server <span class="bcp14">MUST</span> validate that the client is authorized to request delegation tokens using the given grant type.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
 </div>
 <div id="creating-delegated-access-tokens">
-<section id="section-7">
+<section id="section-8">
       <h2 id="name-creating-delegated-access-t">
-<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-creating-delegated-access-t" class="section-name selfRef">Creating Delegated Access Tokens</a>
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-creating-delegated-access-t" class="section-name selfRef">Creating Delegated Access Tokens</a>
       </h2>
-<p id="section-7-1">The client creates delegated access tokens by:<a href="#section-7-1" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-7-2">
-<li id="section-7-2.1">
-          <p id="section-7-2.1.1">Validating the delegation token's validity and permissions.<a href="#section-7-2.1.1" class="pilcrow">¶</a></p>
+<p id="section-8-1">The client creates delegated access tokens by:<a href="#section-8-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-8-2">
+<li id="section-8-2.1">
+          <p id="section-8-2.1.1">Validating the delegation token's validity and permissions.<a href="#section-8-2.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li id="section-7-2.2">
-          <p id="section-7-2.2.1">Generating a subordinate access token with (optionally) reduced privileges.<a href="#section-7-2.2.1" class="pilcrow">¶</a></p>
+        <li id="section-8-2.2">
+          <p id="section-8-2.2.1">Generating a subordinate access token with (optionally) reduced privileges.<a href="#section-8-2.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li id="section-7-2.3">
-          <p id="section-7-2.3.1">Applying cryptographic protection using the delegation key (digital signature, encryption or MAC).<a href="#section-7-2.3.1" class="pilcrow">¶</a></p>
+        <li id="section-8-2.3">
+          <p id="section-8-2.3.1">Applying cryptographic protection using the delegation key (digital signature).<a href="#section-8-2.3.1" class="pilcrow">¶</a></p>
 </li>
       </ol>
-<p id="section-7-3">The client <span class="bcp14">MUST</span> include the delegation token in the <code>delegation_token</code> attribute of the delegated access token.<a href="#section-7-3" class="pilcrow">¶</a></p>
-<p id="section-7-4">The client <span class="bcp14">MUST</span> ensure that the delegated access token's scope, lifetime, audience, and other claims do not exceed those of the delegation token. The client <span class="bcp14">MAY</span> generate single-use delegated access tokens that the resource server or authorization server only consider valid when validating it for the first time.<a href="#section-7-4" class="pilcrow">¶</a></p>
-<p id="section-7-5">The client is <span class="bcp14">RECOMMENDED</span> to "sender-constrain" the delegated access tokens by binding the delegated access tokens with public keys or certificates where the corresponding private keys are owned by the delegated parties, via techniques similar to OAuth 2.0 mTLS <span>[<a href="#RFC8705" class="cite xref">RFC8705</a>]</span> or OAuth 2.0 DPoP <span>[<a href="#RFC9449" class="cite xref">RFC9449</a>]</span>.<a href="#section-7-5" class="pilcrow">¶</a></p>
+<p id="section-8-3">The client <span class="bcp14">MUST</span> include the delegation token in the <code>delegation_token</code> attribute of the delegated access token.<a href="#section-8-3" class="pilcrow">¶</a></p>
+<p id="section-8-4">The client <span class="bcp14">MUST</span> ensure that the delegated access token's scope, lifetime, audience, and other claims do not exceed those of the delegation token. The client <span class="bcp14">MAY</span> generate single-use delegated access tokens that the resource server or authorization server only consider valid when validating it for the first time.<a href="#section-8-4" class="pilcrow">¶</a></p>
+<p id="section-8-5">The client is <span class="bcp14">RECOMMENDED</span> to "sender-constrain" the delegated access tokens by binding the delegated access tokens with public keys or certificates where the corresponding private keys are owned by the delegated parties, via techniques similar to OAuth 2.0 mTLS <span>[<a href="#RFC8705" class="cite xref">RFC8705</a>]</span> or OAuth 2.0 DPoP <span>[<a href="#RFC9449" class="cite xref">RFC9449</a>]</span>.<a href="#section-8-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="using-delegated-access-tokens">
-<section id="section-8">
+<section id="section-9">
       <h2 id="name-using-delegated-access-toke">
-<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-using-delegated-access-toke" class="section-name selfRef">Using Delegated Access Tokens</a>
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-using-delegated-access-toke" class="section-name selfRef">Using Delegated Access Tokens</a>
       </h2>
-<p id="section-8-1">When the client accesses a delegated resource on the delegated party, the client <span class="bcp14">MUST</span> include the delegated access token as a bearer token <span>[<a href="#RFC6750" class="cite xref">RFC6750</a>]</span> in the <code>Delegated-Authorization</code> header, used by the target resource server to verify requests from the delegated party. The <code>Delegated-Authorization</code> header <span class="bcp14">MAY</span> be used in combination with an <code>Authorization</code> header used by the delegated party to verify the request from the client.<a href="#section-8-1" class="pilcrow">¶</a></p>
-<p id="section-8-2">For example:<a href="#section-8-2" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-8-3">
+<p id="section-9-1">When the client accesses a delegated resource on the delegated party, the client <span class="bcp14">MUST</span> include the delegated access token as a bearer token <span>[<a href="#RFC6750" class="cite xref">RFC6750</a>]</span> in the <code>Delegated-Authorization</code> header, used by the target resource server to verify requests from the delegated party. The <code>Delegated-Authorization</code> header <span class="bcp14">MAY</span> be used in combination with an <code>Authorization</code> header used by the delegated party to verify the request from the client.<a href="#section-9-1" class="pilcrow">¶</a></p>
+<p id="section-9-2">For example:<a href="#section-9-2" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-9-3">
 <pre>
 GET /dp-resource HTTP/1.1
 Host: delegated-party.example.com
 Authorization: Bearer mF_9.B5g1234
 Delegated-Authorization: Bearer mF_9.B5f-4.1JqM
-</pre><a href="#section-8-3" class="pilcrow">¶</a>
+</pre><a href="#section-9-3" class="pilcrow">¶</a>
 </div>
-<p id="section-8-4">Upon receiving a delegated resource request with a <code>Delegated-Authorization</code> header, the delegated party sends a request to the target resource server for the respective target resource. The delegated party <span class="bcp14">MUST</span> include the received delegated access token as a bearer token in the <code>Authorization</code> header.<a href="#section-8-4" class="pilcrow">¶</a></p>
-<p id="section-8-5">For example:<a href="#section-8-5" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-8-6">
+<p id="section-9-4">Upon receiving a delegated resource request with a <code>Delegated-Authorization</code> header, the delegated party sends a request to the target resource server for the respective target resource. The delegated party <span class="bcp14">MUST</span> include the received delegated access token as a bearer token in the <code>Authorization</code> header.<a href="#section-9-4" class="pilcrow">¶</a></p>
+<p id="section-9-5">For example:<a href="#section-9-5" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-9-6">
 <pre>
 GET /target-resource HTTP/1.1
 Host: resource.example.com
 Authorization: Bearer mF_9.B5f-4.1JqM
-</pre><a href="#section-8-6" class="pilcrow">¶</a>
+</pre><a href="#section-9-6" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="verification-of-delegated-access-tokens">
-<section id="section-9">
+<section id="section-10">
       <h2 id="name-verification-of-delegated-a">
-<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-verification-of-delegated-a" class="section-name selfRef">Verification of Delegated Access Tokens</a>
+<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-verification-of-delegated-a" class="section-name selfRef">Verification of Delegated Access Tokens</a>
       </h2>
-<p id="section-9-1">Resource servers verify delegated access tokens through either local validation using pre-configured public keys or remote validation via token introspection <span>[<a href="#RFC7662" class="cite xref">RFC7662</a>]</span> at the authorization server.<a href="#section-9-1" class="pilcrow">¶</a></p>
+<p id="section-10-1">Resource servers verify delegated access tokens through either local validation using pre-configured public keys or remote validation via token introspection <span>[<a href="#RFC7662" class="cite xref">RFC7662</a>]</span> at the authorization server.<a href="#section-10-1" class="pilcrow">¶</a></p>
 <div id="local-verification">
-<section id="section-9.1">
+<section id="section-10.1">
         <h3 id="name-local-verification">
-<a href="#section-9.1" class="section-number selfRef">9.1. </a><a href="#name-local-verification" class="section-name selfRef">Local Verification</a>
+<a href="#section-10.1" class="section-number selfRef">10.1. </a><a href="#name-local-verification" class="section-name selfRef">Local Verification</a>
         </h3>
-<p id="section-9.1-1">The resource server verifies delegated access tokens by:<a href="#section-9.1-1" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-9.1-2">
-<li id="section-9.1-2.1">
-            <p id="section-9.1-2.1.1">The resource server is pre-configured with the authorization server's public key, or it fetches the public key via the authorization server's JWKS endpoint <span>[<a href="#RFC7517" class="cite xref">RFC7517</a>]</span>.<a href="#section-9.1-2.1.1" class="pilcrow">¶</a></p>
+<p id="section-10.1-1">The resource server verifies delegated access tokens by:<a href="#section-10.1-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-10.1-2">
+<li id="section-10.1-2.1">
+            <p id="section-10.1-2.1.1">The resource server is pre-configured with the authorization server's public key, or it fetches the public key via the authorization server's JWKS endpoint <span>[<a href="#RFC7517" class="cite xref">RFC7517</a>]</span>.<a href="#section-10.1-2.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-9.1-2.2">
-            <p id="section-9.1-2.2.1">Checking the digital signature of the delegation token (part of the delegated access token) against the authorization server's public key.<a href="#section-9.1-2.2.1" class="pilcrow">¶</a></p>
+          <li id="section-10.1-2.2">
+            <p id="section-10.1-2.2.1">Checking the digital signature of the delegation token (part of the delegated access token) against the authorization server's public key.<a href="#section-10.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-9.1-2.3">
-            <p id="section-9.1-2.3.1">Checking the digital signature of the delegated access token against the delegation key bound to the delegation token.<a href="#section-9.1-2.3.1" class="pilcrow">¶</a></p>
+          <li id="section-10.1-2.3">
+            <p id="section-10.1-2.3.1">Checking the digital signature of the delegated access token against the delegation key bound to the delegation token.<a href="#section-10.1-2.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-9.1-2.4">
-            <p id="section-9.1-2.4.1">Verifying the delegated access token's permissions and validity are within the scope of the delegation token.<a href="#section-9.1-2.4.1" class="pilcrow">¶</a></p>
+          <li id="section-10.1-2.4">
+            <p id="section-10.1-2.4.1">Verifying the delegated access token's permissions and validity are within the scope of the delegation token.<a href="#section-10.1-2.4.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-9.1-2.5">
-            <p id="section-9.1-2.5.1">Verifying the delegated access token is within validity period, and the delegated access token's permissions cover the resource request.<a href="#section-9.1-2.5.1" class="pilcrow">¶</a></p>
+          <li id="section-10.1-2.5">
+            <p id="section-10.1-2.5.1">Verifying the delegated access token is within validity period, and the delegated access token's permissions cover the resource request.<a href="#section-10.1-2.5.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 </section>
 </div>
 <div id="token-introspection">
-<section id="section-9.2">
+<section id="section-10.2">
         <h3 id="name-token-introspection">
-<a href="#section-9.2" class="section-number selfRef">9.2. </a><a href="#name-token-introspection" class="section-name selfRef">Token Introspection</a>
+<a href="#section-10.2" class="section-number selfRef">10.2. </a><a href="#name-token-introspection" class="section-name selfRef">Token Introspection</a>
         </h3>
-<p id="section-9.2-1">The resource server sends the delegated access token to the authorization server via the token introspection endpoint. The authorization server verifies the delegated access token against its keys.<a href="#section-9.2-1" class="pilcrow">¶</a></p>
+<p id="section-10.2-1">The resource server sends the delegated access token to the authorization server via the token introspection endpoint <span>[<a href="#RFC7662" class="cite xref">RFC7662</a>]</span>. The authorization server verifies the delegated access token against its keys.<a href="#section-10.2-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="privacy-considerations">
+<section id="section-11">
+      <h2 id="name-privacy-considerations">
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-privacy-considerations" class="section-name selfRef">Privacy Considerations</a>
+      </h2>
+<p id="section-11-1">This section describes the privacy properties of the local delegation approach defined in this specification.<a href="#section-11-1" class="pilcrow">¶</a></p>
+<div id="privacy-benefits">
+<section id="section-11.1">
+        <h3 id="name-privacy-benefits">
+<a href="#section-11.1" class="section-number selfRef">11.1. </a><a href="#name-privacy-benefits" class="section-name selfRef">Privacy Benefits</a>
+        </h3>
+<p id="section-11.1-1">When a client creates delegated access tokens locally using a delegation token, the authorization server only observes the initial delegation token request. After that, the client can independently issue subordinate tokens without further authorization server interaction. This provides the following privacy benefits:<a href="#section-11.1-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-11.1-2.1">
+            <p id="section-11.1-2.1.1"><strong>Minimized Authorization Server Visibility</strong>: The authorization server does not learn which delegated parties are authorized, what resources they access, or when they access them.<a href="#section-11.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-11.1-2.2">
+            <p id="section-11.1-2.2.1"><strong>No Access Pattern Correlation</strong>: The authorization server cannot track usage patterns or correlate activities across different delegated parties.<a href="#section-11.1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-11.1-2.3">
+            <p id="section-11.1-2.3.1"><strong>Reduced Data Collection</strong>: The authorization server stores only metadata about the initial delegation token, not about each delegated access token.<a href="#section-11.1-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-11.1-2.4">
+            <p id="section-11.1-2.4.1"><strong>Network Traffic Reduction</strong>: Fewer network round-trips to the authorization server reduce exposure to network surveillance.<a href="#section-11.1-2.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+<div id="relationship-to-token-exchange">
+<section id="section-11.2">
+        <h3 id="name-relationship-to-token-excha">
+<a href="#section-11.2" class="section-number selfRef">11.2. </a><a href="#name-relationship-to-token-excha" class="section-name selfRef">Relationship to Token Exchange</a>
+        </h3>
+<p id="section-11.2-1">Token Exchange <span>[<a href="#RFC8693" class="cite xref">RFC8693</a>]</span> provides a mechanism for delegating access by having the client exchange one token for another at the authorization server. That approach requires authorization server involvement for each delegation event, which necessarily exposes delegation metadata to the authorization server. The local delegation approach in this specification performs delegation entirely on the client side after the initial token issuance, providing an alternative with different privacy characteristics.<a href="#section-11.2-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="trade-offs">
+<section id="section-11.3">
+        <h3 id="name-trade-offs">
+<a href="#section-11.3" class="section-number selfRef">11.3. </a><a href="#name-trade-offs" class="section-name selfRef">Trade-offs</a>
+        </h3>
+<p id="section-11.3-1">While local delegation provides significant privacy benefits, implementations should consider:<a href="#section-11.3-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-11.3-2.1">
+            <p id="section-11.3-2.1.1"><strong>Client Responsibility</strong>: The client must securely protect the delegation key and properly enforce delegation rules.<a href="#section-11.3-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-11.3-2.2">
+            <p id="section-11.3-2.2.1"><strong>Auditability</strong>: Deployments requiring delegation event audits can implement client-side logging rather than relying on authorization server monitoring.<a href="#section-11.3-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-11.3-2.3">
+            <p id="section-11.3-2.3.1"><strong>Revocation</strong>: If a delegation key is compromised, the authorization server may need to revoke the entire delegation token.<a href="#section-11.3-2.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
 </section>
 </div>
 </section>
 </div>
 <div id="security-considerations">
-<section id="section-10">
+<section id="section-12">
       <h2 id="name-security-considerations">
-<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
-<p id="section-10-1">This specification extends OAuth 2.0 to support delegated authorization through hierarchical token issuance. While this enables fine-grained privilege delegation, it also introduces new trust and security considerations.<a href="#section-10-1" class="pilcrow">¶</a></p>
+<p id="section-12-1">This specification extends OAuth 2.0 to support delegated authorization through hierarchical token issuance. While this enables fine-grained privilege delegation, it also introduces new trust and security considerations.<a href="#section-12-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-10-2.1">
-          <p id="section-10-2.1.1">Delegation tokens <span class="bcp14">MUST NOT</span> be sent to resource servers without subordinate delegated access tokens. Resource servers and authorization servers <span class="bcp14">MUST NOT</span> treat delegation tokens as regular OAuth access tokens.<a href="#section-10-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-12-2.1">
+          <p id="section-12-2.1.1">Delegation tokens <span class="bcp14">MUST NOT</span> be sent to resource servers without subordinate delegated access tokens. Resource servers and authorization servers <span class="bcp14">MUST NOT</span> treat delegation tokens as regular OAuth access tokens.<a href="#section-12-2.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-10-2.2">
-          <p id="section-10-2.2.1">Clients <span class="bcp14">MUST</span> protect the delegation key, as compromise allows an attacker to mint valid delegated access tokens within the scope of the delegation token.<a href="#section-10-2.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-12-2.2">
+          <p id="section-12-2.2.1">Clients <span class="bcp14">MUST</span> protect the delegation key, as compromise allows an attacker to mint valid delegated access tokens within the scope of the delegation token.<a href="#section-12-2.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-10-2.3">
-          <p id="section-10-2.3.1">Delegated access tokens <span class="bcp14">SHOULD</span> have short lifetimes and be bound to specific audiences, methods, and sender keys (e.g., via DPoP or mTLS) to mitigate replay and token leakage risks. Resource servers <span class="bcp14">MUST</span> validate both the delegation token and the delegated access token, ensuring the latter does not exceed the former’s permissions.<a href="#section-10-2.3.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-12-2.3">
+          <p id="section-12-2.3.1">Delegated access tokens <span class="bcp14">SHOULD</span> have short lifetimes and be bound to specific audiences, methods, and sender keys (e.g., via DPoP or mTLS) to mitigate replay and token leakage risks. Resource servers <span class="bcp14">MUST</span> validate both the delegation token and the delegated access token, ensuring the latter does not exceed the former’s permissions.<a href="#section-12-2.3.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-10-2.4">
-          <p id="section-10-2.4.1">Token introspection CAN be used in scenarios where the tokens are kept opaque from the delegated party and the resource server. If employed, token introspection responses <span class="bcp14">MUST NOT</span> reveal sensitive internal information. Authorization servers <span class="bcp14">SHOULD</span> enforce rate limiting and audit token issuance and validation activities.<a href="#section-10-2.4.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-12-2.4">
+          <p id="section-12-2.4.1">Token introspection CAN be used in scenarios where the tokens are kept opaque from the delegated party and the resource server. If employed, token introspection responses <span class="bcp14">MUST NOT</span> reveal sensitive internal information. Authorization servers <span class="bcp14">SHOULD</span> enforce rate limiting and audit token issuance and validation activities.<a href="#section-12-2.4.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
 </div>
 <div id="operational-considerations">
-<section id="section-11">
+<section id="section-13">
       <h2 id="name-operational-considerations">
-<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-operational-considerations" class="section-name selfRef">Operational Considerations</a>
+<a href="#section-13" class="section-number selfRef">13. </a><a href="#name-operational-considerations" class="section-name selfRef">Operational Considerations</a>
       </h2>
-<p id="section-11-1">Deployments of this specification should consider the following operational aspects:<a href="#section-11-1" class="pilcrow">¶</a></p>
+<p id="section-13-1">Deployments of this specification should consider the following operational aspects:<a href="#section-13-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-11-2.1">
-          <p id="section-11-2.1.1"><strong>Key Management</strong>: Clients <span class="bcp14">MUST</span> securely store and rotate delegation keys. Authorization servers <span class="bcp14">SHOULD</span> support key rotation for delegation tokens and provide mechanisms to revoke compromised keys.<a href="#section-11-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-13-2.1">
+          <p id="section-13-2.1.1"><strong>Key Management</strong>: Clients <span class="bcp14">MUST</span> securely store and rotate delegation keys. Authorization servers <span class="bcp14">SHOULD</span> support key rotation for delegation tokens and provide mechanisms to revoke compromised keys.<a href="#section-13-2.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-11-2.2">
-          <p id="section-11-2.2.1"><strong>Token Lifetimes</strong>: Delegation tokens <span class="bcp14">SHOULD</span> have longer lifetimes than delegated access tokens to reduce authorization server load, and <span class="bcp14">SHOULD</span> be refreshable using refresh tokens.<a href="#section-11-2.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-13-2.2">
+          <p id="section-13-2.2.1"><strong>Token Lifetimes</strong>: Delegation tokens <span class="bcp14">SHOULD</span> have longer lifetimes than delegated access tokens to reduce authorization server load, and <span class="bcp14">SHOULD</span> be refreshable using refresh tokens.<a href="#section-13-2.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-11-2.3">
-          <p id="section-11-2.3.1"><strong>Metadata Caching</strong>: Delegated party metadata at the well-known URI /.well-known/oauth-delegated-party can be cached by clients; a reasonable default TTL (e.g., 24 hours) is <span class="bcp14">RECOMMENDED</span>.<a href="#section-11-2.3.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-13-2.3">
+          <p id="section-13-2.3.1"><strong>Metadata Caching</strong>: Delegated party metadata at the well-known URI /.well-known/oauth-delegated-party can be cached by clients; a reasonable default TTL (e.g., 24 hours) is <span class="bcp14">RECOMMENDED</span>.<a href="#section-13-2.3.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-11-2.4">
-          <p id="section-11-2.4.1"><strong>Error Handling</strong>: Delegated parties and resource servers <span class="bcp14">SHOULD</span> provide clear error responses (e.g., invalid token, insufficient scope) without exposing implementation details.<a href="#section-11-2.4.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-13-2.4">
+          <p id="section-13-2.4.1"><strong>Error Handling</strong>: Delegated parties and resource servers <span class="bcp14">SHOULD</span> provide clear error responses (e.g., invalid token, insufficient scope) without exposing implementation details.<a href="#section-13-2.4.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-11-2.5">
-          <p id="section-11-2.5.1"><strong>Interoperability</strong>: Implementers <span class="bcp14">SHOULD</span> ensure compatibility with existing OAuth 2.0 features such as PKCE, Rich Authorization Requests, and sender-constrained tokens.<a href="#section-11-2.5.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-13-2.5">
+          <p id="section-13-2.5.1"><strong>Interoperability</strong>: Implementers <span class="bcp14">SHOULD</span> ensure compatibility with existing OAuth 2.0 features such as PKCE, Rich Authorization Requests, and sender-constrained tokens.<a href="#section-13-2.5.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
 </div>
 <div id="iana-considerations">
-<section id="section-12">
+<section id="section-14">
       <h2 id="name-iana-considerations">
-<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+<a href="#section-14" class="section-number selfRef">14. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
       </h2>
 <div id="well-known-uris-registry">
-<section id="section-12.1">
+<section id="section-14.1">
         <h3 id="name-well-known-uris-registry">
-<a href="#section-12.1" class="section-number selfRef">12.1. </a><a href="#name-well-known-uris-registry" class="section-name selfRef">Well-Known URIs Registry</a>
+<a href="#section-14.1" class="section-number selfRef">14.1. </a><a href="#name-well-known-uris-registry" class="section-name selfRef">Well-Known URIs Registry</a>
         </h3>
-<p id="section-12.1-1">This specification registers the following entry in the "Well-Known URIs" registry:<a href="#section-12.1-1" class="pilcrow">¶</a></p>
+<p id="section-14.1-1">This specification registers the following entry in the "Well-Known URIs" registry:<a href="#section-14.1-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-12.1-2.1">
-            <p id="section-12.1-2.1.1"><strong>URI suffix</strong>: oauth-delegated-party<a href="#section-12.1-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-14.1-2.1">
+            <p id="section-14.1-2.1.1"><strong>URI suffix</strong>: oauth-delegated-party<a href="#section-14.1-2.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.1-2.2">
-            <p id="section-12.1-2.2.1"><strong>Reference</strong>: [this document]<a href="#section-12.1-2.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-14.1-2.2">
+            <p id="section-14.1-2.2.1"><strong>Reference</strong>: [this document]<a href="#section-14.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.1-2.3">
-            <p id="section-12.1-2.3.1"><strong>Status</strong>: permanent<a href="#section-12.1-2.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-14.1-2.3">
+            <p id="section-14.1-2.3.1"><strong>Status</strong>: permanent<a href="#section-14.1-2.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.1-2.4">
-            <p id="section-12.1-2.4.1"><strong>Change controller</strong>: IETF<a href="#section-12.1-2.4.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-14.1-2.4">
+            <p id="section-14.1-2.4.1"><strong>Change controller</strong>: IETF<a href="#section-14.1-2.4.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.1-2.5">
-            <p id="section-12.1-2.5.1"><strong>Related information</strong>: (none)<a href="#section-12.1-2.5.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-14.1-2.5">
+            <p id="section-14.1-2.5.1"><strong>Related information</strong>: (none)<a href="#section-14.1-2.5.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
 </div>
 <div id="oauth-parameters-registry">
-<section id="section-12.2">
+<section id="section-14.2">
         <h3 id="name-oauth-parameters-registry">
-<a href="#section-12.2" class="section-number selfRef">12.2. </a><a href="#name-oauth-parameters-registry" class="section-name selfRef">OAuth Parameters Registry</a>
+<a href="#section-14.2" class="section-number selfRef">14.2. </a><a href="#name-oauth-parameters-registry" class="section-name selfRef">OAuth Parameters Registry</a>
         </h3>
-<p id="section-12.2-1">This specification registers the following parameters in the "OAuth Parameters" registry:<a href="#section-12.2-1" class="pilcrow">¶</a></p>
-<p id="section-12.2-2"><strong>Delegation:</strong><a href="#section-12.2-2" class="pilcrow">¶</a></p>
+<p id="section-14.2-1">This specification registers the following parameters in the "OAuth Parameters" registry:<a href="#section-14.2-1" class="pilcrow">¶</a></p>
+<p id="section-14.2-2"><strong>Delegation:</strong><a href="#section-14.2-2" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-12.2-3.1">
-            <p id="section-12.2-3.1.1"><strong>Name</strong>: delegation<a href="#section-12.2-3.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-14.2-3.1">
+            <p id="section-14.2-3.1.1"><strong>Name</strong>: delegation<a href="#section-14.2-3.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.2-3.2">
-            <p id="section-12.2-3.2.1"><strong>Parameter Usage Location</strong>: authorization request, token request<a href="#section-12.2-3.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-14.2-3.2">
+            <p id="section-14.2-3.2.1"><strong>Parameter Usage Location</strong>: authorization request, token request<a href="#section-14.2-3.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.2-3.3">
-            <p id="section-12.2-3.3.1"><strong>Change Controller</strong>: IETF<a href="#section-12.2-3.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-14.2-3.3">
+            <p id="section-14.2-3.3.1"><strong>Change Controller</strong>: IETF<a href="#section-14.2-3.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.2-3.4">
-            <p id="section-12.2-3.4.1"><strong>Reference</strong>: [this document]<a href="#section-12.2-3.4.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-14.2-3.4">
+            <p id="section-14.2-3.4.1"><strong>Reference</strong>: [this document]<a href="#section-14.2-3.4.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-12.2-4"><strong>Delegation Key:</strong><a href="#section-12.2-4" class="pilcrow">¶</a></p>
+<p id="section-14.2-4"><strong>Delegation Key:</strong><a href="#section-14.2-4" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-12.2-5.1">
-            <p id="section-12.2-5.1.1"><strong>Name</strong>: delegation_key<a href="#section-12.2-5.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-14.2-5.1">
+            <p id="section-14.2-5.1.1"><strong>Name</strong>: delegation_key<a href="#section-14.2-5.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.2-5.2">
-            <p id="section-12.2-5.2.1"><strong>Parameter Usage Location</strong>: token request<a href="#section-12.2-5.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-14.2-5.2">
+            <p id="section-14.2-5.2.1"><strong>Parameter Usage Location</strong>: token request<a href="#section-14.2-5.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.2-5.3">
-            <p id="section-12.2-5.3.1"><strong>Change Controller</strong>: IETF<a href="#section-12.2-5.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-14.2-5.3">
+            <p id="section-14.2-5.3.1"><strong>Change Controller</strong>: IETF<a href="#section-14.2-5.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.2-5.4">
-            <p id="section-12.2-5.4.1"><strong>Reference</strong>: [this document]<a href="#section-12.2-5.4.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-14.2-5.4">
+            <p id="section-14.2-5.4.1"><strong>Reference</strong>: [this document]<a href="#section-14.2-5.4.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
 </div>
 <div id="oauth-access-token-types-registry">
-<section id="section-12.3">
+<section id="section-14.3">
         <h3 id="name-oauth-access-token-types-re">
-<a href="#section-12.3" class="section-number selfRef">12.3. </a><a href="#name-oauth-access-token-types-re" class="section-name selfRef">OAuth Access Token Types Registry</a>
+<a href="#section-14.3" class="section-number selfRef">14.3. </a><a href="#name-oauth-access-token-types-re" class="section-name selfRef">OAuth Access Token Types Registry</a>
         </h3>
-<p id="section-12.3-1">This specification registers the following parameters in the "OAuth Access Token Types" registry:<a href="#section-12.3-1" class="pilcrow">¶</a></p>
+<p id="section-14.3-1">This specification registers the following parameters in the "OAuth Access Token Types" registry:<a href="#section-14.3-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-12.3-2.1">
-            <p id="section-12.3-2.1.1"><strong>Name</strong>: Delegation<a href="#section-12.3-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-14.3-2.1">
+            <p id="section-14.3-2.1.1"><strong>Name</strong>: Delegation<a href="#section-14.3-2.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.3-2.2">
-            <p id="section-12.3-2.2.1"><strong>Additional Token Endpoint Response Parameters</strong>: (none)<a href="#section-12.3-2.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-14.3-2.2">
+            <p id="section-14.3-2.2.1"><strong>Additional Token Endpoint Response Parameters</strong>: (none)<a href="#section-14.3-2.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.3-2.3">
-            <p id="section-12.3-2.3.1"><strong>HTTP Authentication Scheme(s)</strong>: Bearer<a href="#section-12.3-2.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-14.3-2.3">
+            <p id="section-14.3-2.3.1"><strong>HTTP Authentication Scheme(s)</strong>: Bearer<a href="#section-14.3-2.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.3-2.4">
-            <p id="section-12.3-2.4.1"><strong>Change Controller</strong>: IETF<a href="#section-12.3-2.4.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-14.3-2.4">
+            <p id="section-14.3-2.4.1"><strong>Change Controller</strong>: IETF<a href="#section-14.3-2.4.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.3-2.5">
-            <p id="section-12.3-2.5.1"><strong>Reference</strong>: [this document]<a href="#section-12.3-2.5.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-14.3-2.5">
+            <p id="section-14.3-2.5.1"><strong>Reference</strong>: [this document]<a href="#section-14.3-2.5.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
 </div>
 <div id="http-field-name-registry">
-<section id="section-12.4">
+<section id="section-14.4">
         <h3 id="name-http-field-name-registry">
-<a href="#section-12.4" class="section-number selfRef">12.4. </a><a href="#name-http-field-name-registry" class="section-name selfRef">HTTP Field Name Registry</a>
+<a href="#section-14.4" class="section-number selfRef">14.4. </a><a href="#name-http-field-name-registry" class="section-name selfRef">HTTP Field Name Registry</a>
         </h3>
-<p id="section-12.4-1">This specification registers the following parameters in the "Hypertext Transfer Protocol (HTTP) Field Name" registry:<a href="#section-12.4-1" class="pilcrow">¶</a></p>
+<p id="section-14.4-1">This specification registers the following parameters in the "Hypertext Transfer Protocol (HTTP) Field Name" registry:<a href="#section-14.4-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-12.4-2.1">
-            <p id="section-12.4-2.1.1"><strong>Field Name</strong>: Delegated-Authorization<a href="#section-12.4-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-14.4-2.1">
+            <p id="section-14.4-2.1.1"><strong>Field Name</strong>: Delegated-Authorization<a href="#section-14.4-2.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.4-2.2">
-            <p id="section-12.4-2.2.1"><strong>Status</strong>: permanent<a href="#section-12.4-2.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-14.4-2.2">
+            <p id="section-14.4-2.2.1"><strong>Status</strong>: permanent<a href="#section-14.4-2.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.4-2.3">
-            <p id="section-12.4-2.3.1"><strong>Structured Type</strong>: (none)<a href="#section-12.4-2.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-14.4-2.3">
+            <p id="section-14.4-2.3.1"><strong>Structured Type</strong>: (none)<a href="#section-14.4-2.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.4-2.4">
-            <p id="section-12.4-2.4.1"><strong>Reference</strong>: [this document]<a href="#section-12.4-2.4.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-14.4-2.4">
+            <p id="section-14.4-2.4.1"><strong>Reference</strong>: [this document]<a href="#section-14.4-2.4.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
 </div>
 <div id="oauth-delegated-party-metadata-registry">
-<section id="section-12.5">
+<section id="section-14.5">
         <h3 id="name-oauth-delegated-party-metad">
-<a href="#section-12.5" class="section-number selfRef">12.5. </a><a href="#name-oauth-delegated-party-metad" class="section-name selfRef">OAuth Delegated Party Metadata Registry</a>
+<a href="#section-14.5" class="section-number selfRef">14.5. </a><a href="#name-oauth-delegated-party-metad" class="section-name selfRef">OAuth Delegated Party Metadata Registry</a>
         </h3>
-<p id="section-12.5-1">This specification establishes the "OAuth Delegated Party Metadata" registry for OAuth 2.0 dalagated party metadata names. The registry records the dalagated party metadata parameter and a reference to the specification that defines it.<a href="#section-12.5-1" class="pilcrow">¶</a></p>
+<p id="section-14.5-1">This specification establishes the "OAuth Delegated Party Metadata" registry for OAuth 2.0 delegated party metadata names. The registry records the delegated party metadata parameter and a reference to the specification that defines it.<a href="#section-14.5-1" class="pilcrow">¶</a></p>
 <div id="registration-template">
-<section id="section-12.5.1">
+<section id="section-14.5.1">
           <h4 id="name-registration-template">
-<a href="#section-12.5.1" class="section-number selfRef">12.5.1. </a><a href="#name-registration-template" class="section-name selfRef">Registration Template</a>
+<a href="#section-14.5.1" class="section-number selfRef">14.5.1. </a><a href="#name-registration-template" class="section-name selfRef">Registration Template</a>
           </h4>
-<span class="break"></span><dl class="dlParallel" id="section-12.5.1-1">
-            <dt id="section-12.5.1-1.1">
+<span class="break"></span><dl class="dlParallel" id="section-14.5.1-1">
+            <dt id="section-14.5.1-1.1">
 <strong>Metadata Name</strong>:</dt>
-            <dd style="margin-left: 1.5em" id="section-12.5.1-1.2">
-              <p id="section-12.5.1-1.2.1">The name requested (e.g., "resource"). This name is case sensitive. Names may not match other registered names in a case-insensitive manner unless the designated experts state that there is a compelling reason to allow an exception.<a href="#section-12.5.1-1.2.1" class="pilcrow">¶</a></p>
+            <dd style="margin-left: 1.5em" id="section-14.5.1-1.2">
+              <p id="section-14.5.1-1.2.1">The name requested (e.g., "resource"). This name is case sensitive. Names may not match other registered names in a case-insensitive manner unless the designated experts state that there is a compelling reason to allow an exception.<a href="#section-14.5.1-1.2.1" class="pilcrow">¶</a></p>
 </dd>
             <dd class="break"></dd>
-<dt id="section-12.5.1-1.3">
+<dt id="section-14.5.1-1.3">
 <strong>Metadata Description</strong>:</dt>
-            <dd style="margin-left: 1.5em" id="section-12.5.1-1.4">
-              <p id="section-12.5.1-1.4.1">Brief description of the metadata (e.g., "Resource identifier URL").<a href="#section-12.5.1-1.4.1" class="pilcrow">¶</a></p>
+            <dd style="margin-left: 1.5em" id="section-14.5.1-1.4">
+              <p id="section-14.5.1-1.4.1">Brief description of the metadata (e.g., "Resource identifier URL").<a href="#section-14.5.1-1.4.1" class="pilcrow">¶</a></p>
 </dd>
             <dd class="break"></dd>
-<dt id="section-12.5.1-1.5">
+<dt id="section-14.5.1-1.5">
 <strong>Change Controller</strong>:</dt>
-            <dd style="margin-left: 1.5em" id="section-12.5.1-1.6">
-              <p id="section-12.5.1-1.6.1">For IETF Stream RFCs, list "IETF". For others, give the name of the responsible party. Other details (e.g., postal address, email address, home page URI) may also be included.<a href="#section-12.5.1-1.6.1" class="pilcrow">¶</a></p>
+            <dd style="margin-left: 1.5em" id="section-14.5.1-1.6">
+              <p id="section-14.5.1-1.6.1">For IETF Stream RFCs, list "IETF". For others, give the name of the responsible party. Other details (e.g., postal address, email address, home page URI) may also be included.<a href="#section-14.5.1-1.6.1" class="pilcrow">¶</a></p>
 </dd>
             <dd class="break"></dd>
-<dt id="section-12.5.1-1.7">
+<dt id="section-14.5.1-1.7">
 <strong>Specification Document(s)</strong>:</dt>
-            <dd style="margin-left: 1.5em" id="section-12.5.1-1.8">
-              <p id="section-12.5.1-1.8.1">Reference to the document or documents that specify the parameter, preferably including URIs that can be used to retrieve copies of the documents. An indication of the relevant sections may also be included but is not required.<a href="#section-12.5.1-1.8.1" class="pilcrow">¶</a></p>
+            <dd style="margin-left: 1.5em" id="section-14.5.1-1.8">
+              <p id="section-14.5.1-1.8.1">Reference to the document or documents that specify the parameter, preferably including URIs that can be used to retrieve copies of the documents. An indication of the relevant sections may also be included but is not required.<a href="#section-14.5.1-1.8.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
 </dl>
 </section>
 </div>
 <div id="initial-registry-contents">
-<section id="section-12.5.2">
+<section id="section-14.5.2">
           <h4 id="name-initial-registry-contents">
-<a href="#section-12.5.2" class="section-number selfRef">12.5.2. </a><a href="#name-initial-registry-contents" class="section-name selfRef">Initial Registry Contents</a>
+<a href="#section-14.5.2" class="section-number selfRef">14.5.2. </a><a href="#name-initial-registry-contents" class="section-name selfRef">Initial Registry Contents</a>
           </h4>
-<p id="section-12.5.2-1"><strong>Resources:</strong><a href="#section-12.5.2-1" class="pilcrow">¶</a></p>
+<p id="section-14.5.2-1"><strong>Resources:</strong><a href="#section-14.5.2-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-12.5.2-2.1">
-              <p id="section-12.5.2-2.1.1"><strong>Metadata Name</strong>: resources<a href="#section-12.5.2-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-14.5.2-2.1">
+              <p id="section-14.5.2-2.1.1"><strong>Metadata Name</strong>: resources<a href="#section-14.5.2-2.1.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-12.5.2-2.2">
-              <p id="section-12.5.2-2.2.1"><strong>Metadata Description</strong>: JSON array containing a list of target protected resources' resource identifier URLs<a href="#section-12.5.2-2.2.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-14.5.2-2.2">
+              <p id="section-14.5.2-2.2.1"><strong>Metadata Description</strong>: JSON array containing a list of target protected resources' resource identifier URLs<a href="#section-14.5.2-2.2.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-12.5.2-2.3">
-              <p id="section-12.5.2-2.3.1"><strong>Change Controller</strong>: IETF<a href="#section-12.5.2-2.3.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-14.5.2-2.3">
+              <p id="section-14.5.2-2.3.1"><strong>Change Controller</strong>: IETF<a href="#section-14.5.2-2.3.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-12.5.2-2.4">
-              <p id="section-12.5.2-2.4.1"><strong>Specification Document(s)</strong>: [this document]<a href="#section-12.5.2-2.4.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-14.5.2-2.4">
+              <p id="section-14.5.2-2.4.1"><strong>Specification Document(s)</strong>: [this document]<a href="#section-14.5.2-2.4.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
-<p id="section-12.5.2-3"><strong>Authorization Servers:</strong><a href="#section-12.5.2-3" class="pilcrow">¶</a></p>
+<p id="section-14.5.2-3"><strong>Authorization Servers:</strong><a href="#section-14.5.2-3" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-12.5.2-4.1">
-              <p id="section-12.5.2-4.1.1"><strong>Metadata Name</strong>: authorization_servers<a href="#section-12.5.2-4.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-14.5.2-4.1">
+              <p id="section-14.5.2-4.1.1"><strong>Metadata Name</strong>: authorization_servers<a href="#section-14.5.2-4.1.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-12.5.2-4.2">
-              <p id="section-12.5.2-4.2.1"><strong>Metadata Description</strong>: JSON array containing a list of authorization server issuer identifiers<a href="#section-12.5.2-4.2.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-14.5.2-4.2">
+              <p id="section-14.5.2-4.2.1"><strong>Metadata Description</strong>: JSON array containing a list of authorization server issuer identifiers<a href="#section-14.5.2-4.2.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-12.5.2-4.3">
-              <p id="section-12.5.2-4.3.1"><strong>Change Controller</strong>: IETF<a href="#section-12.5.2-4.3.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-14.5.2-4.3">
+              <p id="section-14.5.2-4.3.1"><strong>Change Controller</strong>: IETF<a href="#section-14.5.2-4.3.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-12.5.2-4.4">
-              <p id="section-12.5.2-4.4.1"><strong>Specification Document(s)</strong>: [this document]<a href="#section-12.5.2-4.4.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-14.5.2-4.4">
+              <p id="section-14.5.2-4.4.1"><strong>Specification Document(s)</strong>: [this document]<a href="#section-14.5.2-4.4.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
-<p id="section-12.5.2-5"><strong>Supported Permissions:</strong><a href="#section-12.5.2-5" class="pilcrow">¶</a></p>
+<p id="section-14.5.2-5"><strong>Supported Permissions:</strong><a href="#section-14.5.2-5" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-12.5.2-6.1">
-              <p id="section-12.5.2-6.1.1"><strong>Metadata Name</strong>: permissions_supported<a href="#section-12.5.2-6.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-14.5.2-6.1">
+              <p id="section-14.5.2-6.1.1"><strong>Metadata Name</strong>: permissions_supported<a href="#section-14.5.2-6.1.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-12.5.2-6.2">
-              <p id="section-12.5.2-6.2.1"><strong>Metadata Description</strong>: JSON object indicating the permissions the delegated party may request<a href="#section-12.5.2-6.2.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-14.5.2-6.2">
+              <p id="section-14.5.2-6.2.1"><strong>Metadata Description</strong>: JSON object indicating the permissions the delegated party may request<a href="#section-14.5.2-6.2.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-12.5.2-6.3">
-              <p id="section-12.5.2-6.3.1"><strong>Change Controller</strong>: IETF<a href="#section-12.5.2-6.3.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-14.5.2-6.3">
+              <p id="section-14.5.2-6.3.1"><strong>Change Controller</strong>: IETF<a href="#section-14.5.2-6.3.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-12.5.2-6.4">
-              <p id="section-12.5.2-6.4.1"><strong>Specification Document(s)</strong>: [this document]<a href="#section-12.5.2-6.4.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-14.5.2-6.4">
+              <p id="section-14.5.2-6.4.1"><strong>Specification Document(s)</strong>: [this document]<a href="#section-14.5.2-6.4.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
-<p id="section-12.5.2-7"><strong>API Permissions:</strong><a href="#section-12.5.2-7" class="pilcrow">¶</a></p>
+<p id="section-14.5.2-7"><strong>API Permissions:</strong><a href="#section-14.5.2-7" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-12.5.2-8.1">
-              <p id="section-12.5.2-8.1.1"><strong>Metadata Name</strong>: api_permissions<a href="#section-12.5.2-8.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-14.5.2-8.1">
+              <p id="section-14.5.2-8.1.1"><strong>Metadata Name</strong>: api_permissions<a href="#section-14.5.2-8.1.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-12.5.2-8.2">
-              <p id="section-12.5.2-8.2.1"><strong>Metadata Description</strong>: JSON object mapping API endpoints (resource identifiers) to the permissions required to access them<a href="#section-12.5.2-8.2.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-14.5.2-8.2">
+              <p id="section-14.5.2-8.2.1"><strong>Metadata Description</strong>: JSON object mapping API endpoints (resource identifiers) to the permissions required to access them<a href="#section-14.5.2-8.2.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-12.5.2-8.3">
-              <p id="section-12.5.2-8.3.1"><strong>Change Controller</strong>: IETF<a href="#section-12.5.2-8.3.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-14.5.2-8.3">
+              <p id="section-14.5.2-8.3.1"><strong>Change Controller</strong>: IETF<a href="#section-14.5.2-8.3.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-12.5.2-8.4">
-              <p id="section-12.5.2-8.4.1"><strong>Specification Document(s)</strong>: [this document]<a href="#section-12.5.2-8.4.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-14.5.2-8.4">
+              <p id="section-14.5.2-8.4.1"><strong>Specification Document(s)</strong>: [this document]<a href="#section-14.5.2-8.4.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
-<p id="section-12.5.2-9"><strong>Delegated Party Documentation:</strong><a href="#section-12.5.2-9" class="pilcrow">¶</a></p>
+<p id="section-14.5.2-9"><strong>Delegated Party Documentation:</strong><a href="#section-14.5.2-9" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-12.5.2-10.1">
-              <p id="section-12.5.2-10.1.1"><strong>Metadata Name</strong>: delegated_party_documentation<a href="#section-12.5.2-10.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-14.5.2-10.1">
+              <p id="section-14.5.2-10.1.1"><strong>Metadata Name</strong>: delegated_party_documentation<a href="#section-14.5.2-10.1.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-12.5.2-10.2">
-              <p id="section-12.5.2-10.2.1"><strong>Metadata Description</strong>: URL of a page containing human-readable information that developers might want or need to know when using the delegated party<a href="#section-12.5.2-10.2.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-14.5.2-10.2">
+              <p id="section-14.5.2-10.2.1"><strong>Metadata Description</strong>: URL of a page containing human-readable information that developers might want or need to know when using the delegated party<a href="#section-14.5.2-10.2.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-12.5.2-10.3">
-              <p id="section-12.5.2-10.3.1"><strong>Change Controller</strong>: IETF<a href="#section-12.5.2-10.3.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-14.5.2-10.3">
+              <p id="section-14.5.2-10.3.1"><strong>Change Controller</strong>: IETF<a href="#section-14.5.2-10.3.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-12.5.2-10.4">
-              <p id="section-12.5.2-10.4.1"><strong>Specification Document(s)</strong>: [this document]<a href="#section-12.5.2-10.4.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-14.5.2-10.4">
+              <p id="section-14.5.2-10.4.1"><strong>Specification Document(s)</strong>: [this document]<a href="#section-14.5.2-10.4.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 </section>
@@ -2020,14 +2224,14 @@ Authorization: Bearer mF_9.B5f-4.1JqM
 </section>
 </div>
 <div id="sec-combined-references">
-<section id="section-13">
+<section id="section-15">
       <h2 id="name-references">
-<a href="#section-13" class="section-number selfRef">13. </a><a href="#name-references" class="section-name selfRef">References</a>
+<a href="#section-15" class="section-number selfRef">15. </a><a href="#name-references" class="section-name selfRef">References</a>
       </h2>
 <div id="sec-normative-references">
-<section id="section-13.1">
+<section id="section-15.1">
         <h3 id="name-normative-references">
-<a href="#section-13.1" class="section-number selfRef">13.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+<a href="#section-15.1" class="section-number selfRef">15.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
         </h3>
 <dl class="references">
 <dt id="RFC2119">[RFC2119]</dt>
@@ -2086,6 +2290,10 @@ Authorization: Bearer mF_9.B5f-4.1JqM
         <dd>
 <span class="refAuthor">Nottingham, M.</span>, <span class="refTitle">"Well-Known Uniform Resource Identifiers (URIs)"</span>, <span class="seriesInfo">RFC 8615</span>, <span class="seriesInfo">DOI 10.17487/RFC8615</span>, <time datetime="2019-05" class="refDate">May 2019</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8615">https://www.rfc-editor.org/rfc/rfc8615</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="RFC8693">[RFC8693]</dt>
+        <dd>
+<span class="refAuthor">Jones, M.</span>, <span class="refAuthor">Nadalin, A.</span>, <span class="refAuthor">Campbell, B., Ed.</span>, <span class="refAuthor">Bradley, J.</span>, and <span class="refAuthor">C. Mortimore</span>, <span class="refTitle">"OAuth 2.0 Token Exchange"</span>, <span class="seriesInfo">RFC 8693</span>, <span class="seriesInfo">DOI 10.17487/RFC8693</span>, <time datetime="2020-01" class="refDate">January 2020</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8693">https://www.rfc-editor.org/rfc/rfc8693</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="RFC8705">[RFC8705]</dt>
         <dd>
 <span class="refAuthor">Campbell, B.</span>, <span class="refAuthor">Bradley, J.</span>, <span class="refAuthor">Sakimura, N.</span>, and <span class="refAuthor">T. Lodderstedt</span>, <span class="refTitle">"OAuth 2.0 Mutual-TLS Client Authentication and Certificate-Bound Access Tokens"</span>, <span class="seriesInfo">RFC 8705</span>, <span class="seriesInfo">DOI 10.17487/RFC8705</span>, <time datetime="2020-02" class="refDate">February 2020</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8705">https://www.rfc-editor.org/rfc/rfc8705</a>&gt;</span>. </dd>
@@ -2107,16 +2315,20 @@ Authorization: Bearer mF_9.B5f-4.1JqM
 <span class="refAuthor">Lodderstedt, T.</span>, <span class="refAuthor">Bradley, J.</span>, <span class="refAuthor">Labunets, A.</span>, and <span class="refAuthor">D. Fett</span>, <span class="refTitle">"Best Current Practice for OAuth 2.0 Security"</span>, <span class="seriesInfo">BCP 240</span>, <span class="seriesInfo">RFC 9700</span>, <span class="seriesInfo">DOI 10.17487/RFC9700</span>, <time datetime="2025-01" class="refDate">January 2025</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9700">https://www.rfc-editor.org/rfc/rfc9700</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC9728">[RFC9728]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Jones, M.B.</span>, <span class="refAuthor">Hunt, P.</span>, and <span class="refAuthor">A. Parecki</span>, <span class="refTitle">"OAuth 2.0 Protected Resource Metadata"</span>, <span class="seriesInfo">RFC 9728</span>, <span class="seriesInfo">DOI 10.17487/RFC9728</span>, <time datetime="2025-04" class="refDate">April 2025</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9728">https://www.rfc-editor.org/rfc/rfc9728</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.lombardo-oauth-step-up-authz-challenge-proto">[I-D.lombardo-oauth-step-up-authz-challenge-proto]</dt>
+      <dd>
+<span class="refAuthor">Lombardo, J.</span>, <span class="refAuthor">Babeanu, A.</span>, <span class="refAuthor">Zehavi, Y.</span>, and <span class="refAuthor">G. Fletcher</span>, <span class="refTitle">"OAuth 2.0 step-up authorization challenge proto"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-lombardo-oauth-step-up-authz-challenge-proto-02</span>, <time datetime="2025-06-30" class="refDate">30 June 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-lombardo-oauth-step-up-authz-challenge-proto-02">https://datatracker.ietf.org/doc/html/draft-lombardo-oauth-step-up-authz-challenge-proto-02</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
 </div>
 <div id="sec-informative-references">
-<section id="section-13.2">
+<section id="section-15.2">
         <h3 id="name-informative-references">
-<a href="#section-13.2" class="section-number selfRef">13.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+<a href="#section-15.2" class="section-number selfRef">15.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
         </h3>
 <dl class="references">
 <dt id="RFC8792">[RFC8792]</dt>
@@ -2133,7 +2345,7 @@ Authorization: Bearer mF_9.B5f-4.1JqM
       <h2 id="name-token-format">
 <a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-token-format" class="section-name selfRef">Token Format</a>
       </h2>
-<p id="appendix-A-1">The example tokens in this section are shown in Flattened JSON Serialization <span>[<a href="#RFC7515" class="cite xref">RFC7515</a>]</span> <span>[<a href="#RFC7516" class="cite xref">RFC7516</a>]</span>, un-base64url-encoded/unencrypted, and with comments for ease of reading. When used as JWTs <span>[<a href="#RFC7519" class="cite xref">RFC7519</a>]</span>, they should be represented in Compact Serialization <span>[<a href="#RFC7515" class="cite xref">RFC7515</a>]</span> <span>[<a href="#RFC7516" class="cite xref">RFC7516</a>]</span>. Similarly, they can be represented as CWTs <span>[<a href="#RFC8392" class="cite xref">RFC8392</a>]</span>.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+<p id="appendix-A-1">The example tokens in this section are shown in Flattened JSON Serialization <span>[<a href="#RFC7515" class="cite xref">RFC7515</a>]</span> <span>[<a href="#RFC7516" class="cite xref">RFC7516</a>]</span>, un-base64url-encoded and with comments for ease of reading. When used as JWTs <span>[<a href="#RFC7519" class="cite xref">RFC7519</a>]</span>, they should be represented in Compact Serialization <span>[<a href="#RFC7515" class="cite xref">RFC7515</a>]</span> <span>[<a href="#RFC7516" class="cite xref">RFC7516</a>]</span>. Similarly, they can be represented as CWTs <span>[<a href="#RFC8392" class="cite xref">RFC8392</a>]</span>.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
 <div id="example-1">
 <section id="appendix-A.1">
         <h3 id="name-example-1">
@@ -2155,16 +2367,16 @@ Authorization: Bearer mF_9.B5f-4.1JqM
     "iss": "https://as1.example.com",
     "sub": "user@example.com",
     "aud": "https://res1.example.com",
-    "iat": 1760946495,
-    "exp": 1763538495,
+    "iat": 1772177588,
+    "exp": 1774769588,
     "scope": "email:read email:send",
     "delegation_key": {
       "kty": "RSA",
-      "n": "xoGV-drpIhwQ9Q3M5ouoA4Y76j4r0c2YcJoPT2qUd8UxV1PZH61TGZUbdUAdQLqi7Pik3GwTk34b6Xxb2-UkW3zoaBx_2FXXfVWwSVbfxi4RCbFP-rWGlbyYTRILj6CJM5JXI8VQdcSF8yfPZVytw-aKU-5k4RddKxgyMwkWNCShWPa_H2WRsDzcy88pE-8q1cg6hbaq5GTywdiSeGWrjMYebQqIN-V63bX2aiOHhFvPVpEoI7AlxlrQd7aJtFwfuRl-0FxJH-2ITrnHFZaFAdoJqvFSD3OKZNkECBpuDL-DHcZUZfEyr4Rvb3WB0iuHHfHXzhbzqAt3NbZalmdQNw",
+      "n": "0Z5t3Rwhfz4MJxdNzg2I6Bsf9H_3kcMKtH6iwJsLV2DKO1MVcHb6wsxHZpqRePjm5Q1-pImr4pT67hCHyAR6kS4QbTrBZcjSe8lsvZIiifiBVWZxz8ZAfdj6EFSOWhFLZ0GVqe9NMslwX1hHOwmhRmMjGjexISPsZk5qN3gwqmD36H1GS-rE-cWlXI9f4pVcCdYqE0rfhZ7hDn5mrpWWY8wJuQa2jFqX-Fhyvt_Zh-qaa5Wp8cLJPS_ceAcLeS5mOYE58beelp51PuCDpq7a9fN4K_EpcSD7Ay0GrJxgN_VcLA7DgOAuU6zYDzk2KnmQ3qz35Tj5hy8jDHgF1AaSTw",
       "e": "AQAB"
     }
   },
-  "signature": "1gR7TSa8ft8Wt4ZA9HuLFTYW2uAw86X2pFRrq9jDoQQ"
+  "signature": "SBwdWhy4dissabBRoyyxMxRuVUbsFYv_1HZFeROLh5A"
 }
 </pre><a href="#appendix-A.1-3" class="pilcrow">¶</a>
 </div>
@@ -2180,15 +2392,14 @@ Authorization: Bearer mF_9.B5f-4.1JqM
   },
   "payload": {
     "_comment": "to be base64url-encoded",
-    "iss": "user@example.com",
     "sub": "https://dp1.example.com",
     "aud": "https://res1.example.com",
-    "iat": 1760950095,
-    "exp": 1760953695,
+    "iat": 1772181188,
+    "exp": 1772184788,
     "scope": "email:read",
-    "delegationToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImFzLWtleS0xIn0.eyJpc3MiOiJodHRwczovL2FzMS5leGFtcGxlLmNvbSIsInN1YiI6InVzZXJAZXhhbXBsZS5jb20iLCJhdWQiOiJodHRwczovL3JlczEuZXhhbXBsZS5jb20iLCJpYXQiOjE3NjA5NDY0OTUsImV4cCI6MTc2MzUzODQ5NSwic2NvcGUiOiJlbWFpbDpyZWFkIGVtYWlsOnNlbmQiLCJkZWxlZ2F0aW9uX2tleSI6eyJrdHkiOiJSU0EiLCJuIjoieG9HVi1kcnBJaHdROVEzTTVvdW9BNFk3Nmo0cjBjMlljSm9QVDJxVWQ4VXhWMVBaSDYxVEdaVWJkVUFkUUxxaTdQaWszR3dUazM0YjZYeGIyLVVrVzN6b2FCeF8yRlhYZlZXd1NWYmZ4aTRSQ2JGUC1yV0dsYnlZVFJJTGo2Q0pNNUpYSThWUWRjU0Y4eWZQWlZ5dHctYUtVLTVrNFJkZEt4Z3lNd2tXTkNTaFdQYV9IMldSc0R6Y3k4OHBFLThxMWNnNmhiYXE1R1R5d2RpU2VHV3JqTVllYlFxSU4tVjYzYlgyYWlPSGhGdlBWcEVvSTdBbHhsclFkN2FKdEZ3ZnVSbC0wRnhKSC0ySVRybkhGWmFGQWRvSnF2RlNEM09LWk5rRUNCcHVETC1ESGNaVVpmRXlyNFJ2YjNXQjBpdUhIZkhYemhienFBdDNOYlphbG1kUU53IiwiZSI6IkFRQUIifX0.1gR7TSa8ft8Wt4ZA9HuLFTYW2uAw86X2pFRrq9jDoQQ"
+    "delegationToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImFzLWtleS0xIn0.eyJpc3MiOiJodHRwczovL2FzMS5leGFtcGxlLmNvbSIsInN1YiI6InVzZXJAZXhhbXBsZS5jb20iLCJhdWQiOiJodHRwczovL3JlczEuZXhhbXBsZS5jb20iLCJpYXQiOjE3NzIxNzc1ODgsImV4cCI6MTc3NDc2OTU4OCwic2NvcGUiOiJlbWFpbDpyZWFkIGVtYWlsOnNlbmQiLCJkZWxlZ2F0aW9uX2tleSI6eyJrdHkiOiJSU0EiLCJuIjoiMFo1dDNSd2hmejRNSnhkTnpnMkk2QnNmOUhfM2tjTUt0SDZpd0pzTFYyREtPMU1WY0hiNndzeEhacHFSZVBqbTVRMS1wSW1yNHBUNjdoQ0h5QVI2a1M0UWJUckJaY2pTZThsc3ZaSWlpZmlCVldaeHo4WkFmZGo2RUZTT1doRkxaMEdWcWU5Tk1zbHdYMWhIT3dtaFJtTWpHamV4SVNQc1prNXFOM2d3cW1EMzZIMUdTLXJFLWNXbFhJOWY0cFZjQ2RZcUUwcmZoWjdoRG41bXJwV1dZOHdKdVFhMmpGcVgtRmh5dnRfWmgtcWFhNVdwOGNMSlBTX2NlQWNMZVM1bU9ZRTU4YmVlbHA1MVB1Q0RwcTdhOWZONEtfRXBjU0Q3QXkwR3JKeGdOX1ZjTEE3RGdPQXVVNnpZRHprMktubVEzcXozNVRqNWh5OGpESGdGMUFhU1R3IiwiZSI6IkFRQUIifX0.SBwdWhy4dissabBRoyyxMxRuVUbsFYv_1HZFeROLh5A"
   },
-  "signature": "r5O4a3d3NMN7vZlOB9P4qPLbHyy12bZH5Ha3DZATa8NUdHYPJBMieiS1tqbhwfnTvwcSR_0Ac42dRHDrk8MWPkCl_9-bfYNvf9eGrcwSRn7889-pleH-QphxZG4Tsr8m2WlGM8VFnC9sjkhqGvmM9ZdC02GEaiptU9D859QU3-u-tvRdSgrHXeuLY2a3hgpWnj0j4gfgpug-VSvNB26vqCWwM4mwMGWYUPDabBaPp-KL38_M1T7q4wvFE0_KLvTSdozMe1ngkLewvSTBrnW1rULhXFk54j381wQ_ovaJhM1aAbWshb1AMzu-aiv0EZJjB1XlgORVh-KbId01TZQLwA"
+  "signature": "df5sTdp6j-ULv3To3yqYFFZWLrY41wu6jpKfsZdjMNMeRH3TXY5nSc-lhdFfJElVGnyCa5Rf9YGlvacGVy84maFCq0zhNTiLL8xBYieCKTAhmMuWZvIUZFBoE1KBj2YXskpnU6CFTKhALbW5lidZSGXdcEnygxwaumpO_AxlYghU8RQrQgF1wAsoDLcoun1-FROuHUzqKGWqYSbXe1lGJ3dTt5ftod7SjGqM2Quz4BvfQMpw82VVGq7YlvRJMuPe4ITUeikFNQ672bvVrjhwHUlglQ9HuFj5iroHqwr6dLtfKVDBtw33A_lCnsWfk4vPWDJ-1fy3Klj4hT_bhBIVJA"
 }
 </pre><a href="#appendix-A.1-5" class="pilcrow">¶</a>
 </div>
@@ -2199,77 +2410,107 @@ Authorization: Bearer mF_9.B5f-4.1JqM
         <h3 id="name-example-2">
 <a href="#appendix-A.2" class="section-number selfRef">A.2. </a><a href="#name-example-2" class="section-name selfRef">Example 2</a>
         </h3>
-<p id="appendix-A.2-1">In this example, the delegation token is a JWE token encrypted with A128CBC-HS256, and the delegated access token is a JWS token signed with ES256.<a href="#appendix-A.2-1" class="pilcrow">¶</a></p>
-<p id="appendix-A.2-2"><strong>Delegation Token</strong>:<a href="#appendix-A.2-2" class="pilcrow">¶</a></p>
+<p id="appendix-A.2-1">In this example, the delegation token chain consists of three tokens: a top-level delegation token issued by the authorization server, a subordinate delegation token created by the client, and a delegated access token created from the subordinate token. The top-level delegation token has <code>max_delegation_depth</code> of 3, which allows for two levels of delegation.<a href="#appendix-A.2-1" class="pilcrow">¶</a></p>
+<p id="appendix-A.2-2"><strong>Top-Level Delegation Token</strong>:<a href="#appendix-A.2-2" class="pilcrow">¶</a></p>
 <div class="lang-sourcecode sourcecode" id="appendix-A.2-3">
 <pre>
 {
   "protected": {
     "_comment": "to be base64url-encoded",
-    "alg": "dir",
-    "enc": "A128CBC-HS256",
+    "alg": "RS256",
     "typ": "JWT",
     "kid": "as-key-2"
   },
-  "iv": "s99tD84KH1_kgbA2ArpUZg",
-  "ciphertext": {
-    "_comment": "to be encrypted",
+  "payload": {
+    "_comment": "to be base64url-encoded",
     "iss": "https://as1.example.com",
     "sub": "user@example.com",
     "aud": "https://res1.example.com",
-    "iat": 1760946495,
-    "exp": 1763538495,
-    "scope": "email:read email:send",
+    "iat": 1772177588,
+    "exp": 1774769588,
+    "scope": "email:read email:write email:send",
     "delegation_key": {
-      "kty": "EC",
-      "crv": "P-256",
-      "x": "iZgQ3t5EK4rVdkex6LAGfxB0deOHtE3-vb-OBxoFv88",
-      "y": "RQVYHkEWrTR6jckD7iHXnRRs60-u9ikSfVnM4epiOLY"
-    }
+      "kty": "RSA",
+      "n": "3O1EVa-_zsENOhylq99puKjF6NBq8S8Ntw9sufyCB9LrTSs-xRoDQ7X6rYbPEOn5E-6ASZyUW2vFxLacj0Wir05hznlnfRLRTmJhud4im5COfAhuiPeL0Mbs3WFLdBfWVGXSP2O5UNkd7dJ2KqudqxNF81Nrt51RpmPR59pUZS3REfAYgtqhQ07WuCTzd2VpFttPFurDSiWcriyELNdgsT9wap0nyceSVLQgY9ZgR0VvsmHj_LUKie1t5RCjTsaMHJH6x3QI0tjKG9Psbil0ORlhA9WEgOO6E6KOC_StEBnK_Ntb2ArGPDjlNPzTqWOeeev84MM8VXdRzpTLOrRmHQ",
+      "e": "AQAB"
+    },
+    "max_delegation_depth": 3
   },
-  "tag": "9Z4ONkwLwv3szT-eIKa4uQ"
+  "signature": "p1OjJQ2tASuFPPCXzdbuSHaZiPTF2jM1Z_My2_qPx0IAAJJ5RVo9Km2hFeXjqqGcjkG5wEFxMw_q8JO48O9bVaKNBa1k_-UoBxf5KlMpldMFIUyV4D8Sugshh73iqVii5HW2MY4uS5Gj46GDUcX1NQRg8LW6Wa4zso0SPfIfunXF0dvBG24cCUoIFOr1NzryZ7OcVt9kdC4_uXGoSmjtGl1XsRvgb216fZFuZV0F88zWFsDcBZn4i8qGcBS2XAHjW4jbH7Y1O8dvl2h0afftmNkG2ZgHPl3phj_i-unQsAxhCUI_8MjtfF5iwe586uQw_1iED2IUlEXOgX-Ld5GgTw"
 }
 </pre><a href="#appendix-A.2-3" class="pilcrow">¶</a>
 </div>
-<p id="appendix-A.2-4"><strong>Delegated Access Token</strong>:<a href="#appendix-A.2-4" class="pilcrow">¶</a></p>
+<p id="appendix-A.2-4"><strong>Subordinate Delegation Token</strong>:<a href="#appendix-A.2-4" class="pilcrow">¶</a></p>
 <div class="lang-sourcecode sourcecode" id="appendix-A.2-5">
 <pre>
 {
   "protected": {
     "_comment": "to be base64url-encoded",
-    "alg": "ES256",
+    "alg": "RS256",
     "typ": "JWT",
     "kid": "delegation-key-2"
   },
   "payload": {
     "_comment": "to be base64url-encoded",
-    "iss": "user@example.com",
-    "sub": "https://dp1.example.com",
     "aud": "https://res1.example.com",
-    "iat": 1760950095,
-    "exp": 1760953695,
-    "scope": "email:read",
-    "delegationToken": "eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwidHlwIjoiSldUIiwia2lkIjoiYXMta2V5LTIifQ..s99tD84KH1_kgbA2ArpUZg.DS5aM1uuKpFFacu7rIvKOYnA-6BRPy6jyZ-3uF8bpplWJkCQmsAi8KqS-qTZuHWNfIWw7ulK-a8rWhfPPfLrgdXky6Ujc_3vm5YXRXmwxlaNJlhr2LexPXsTX2wA_3aIo9c0b5kQB2MHqeI5ucJDSdERCV2AaQTgl7vRmJhZ_FAY5cnd2URHEsqnm5usrywzGMLw5CnXg2MBl1jWxiHp-PmzOmRPHks4jFV2es2jjr-yB5PlX2d-OBCU2hauM_JjtnYOhByiXmAVVE6XKjJHXYM-d5q3JheTDg5gA4f1Io38_r2KA3pW07CF94Nx3i7VRxaFRSVYuNxlEhUx0vxOIlwRBa3_ZOK4Kkg-og66ADs73RuBg91cCthbr63NfIdEXmmYKG2Nx3DehojbVKZQrg.9Z4ONkwLwv3szT-eIKa4uQ"
+    "iat": 1772181188,
+    "exp": 1772782388,
+    "max_delegation_depth": 1,
+    "scope": "email:read email:write",
+    "delegationToken": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImFzLWtleS0yIn0.eyJpc3MiOiJodHRwczovL2FzMS5leGFtcGxlLmNvbSIsInN1YiI6InVzZXJAZXhhbXBsZS5jb20iLCJhdWQiOiJodHRwczovL3JlczEuZXhhbXBsZS5jb20iLCJpYXQiOjE3NzIxNzc1ODgsImV4cCI6MTc3NDc2OTU4OCwic2NvcGUiOiJlbWFpbDpyZWFkIGVtYWlsOndyaXRlIGVtYWlsOnNlbmQiLCJkZWxlZ2F0aW9uX2tleSI6eyJrdHkiOiJSU0EiLCJuIjoiM08xRVZhLV96c0VOT2h5bHE5OXB1S2pGNk5CcThTOE50dzlzdWZ5Q0I5THJUU3MteFJvRFE3WDZyWWJQRU9uNUUtNkFTWnlVVzJ2RnhMYWNqMFdpcjA1aHpubG5mUkxSVG1KaHVkNGltNUNPZkFodWlQZUwwTWJzM1dGTGRCZldWR1hTUDJPNVVOa2Q3ZEoyS3F1ZHF4TkY4MU5ydDUxUnBtUFI1OXBVWlMzUkVmQVlndHFoUTA3V3VDVHpkMlZwRnR0UEZ1ckRTaVdjcml5RUxOZGdzVDl3YXAwbnljZVNWTFFnWTlaZ1IwVnZzbUhqX0xVS2llMXQ1UkNqVHNhTUhKSDZ4M1FJMHRqS0c5UHNiaWwwT1JsaEE5V0VnT082RTZLT0NfU3RFQm5LX050YjJBckdQRGpsTlB6VHFXT2VlZXY4NE1NOFZYZFJ6cFRMT3JSbUhRIiwiZSI6IkFRQUIifSwibWF4X2RlbGVnYXRpb25fZGVwdGgiOjN9.p1OjJQ2tASuFPPCXzdbuSHaZiPTF2jM1Z_My2_qPx0IAAJJ5RVo9Km2hFeXjqqGcjkG5wEFxMw_q8JO48O9bVaKNBa1k_-UoBxf5KlMpldMFIUyV4D8Sugshh73iqVii5HW2MY4uS5Gj46GDUcX1NQRg8LW6Wa4zso0SPfIfunXF0dvBG24cCUoIFOr1NzryZ7OcVt9kdC4_uXGoSmjtGl1XsRvgb216fZFuZV0F88zWFsDcBZn4i8qGcBS2XAHjW4jbH7Y1O8dvl2h0afftmNkG2ZgHPl3phj_i-unQsAxhCUI_8MjtfF5iwe586uQw_1iED2IUlEXOgX-Ld5GgTw"
   },
-  "signature": "hlxIMOUb_Wdjh53VPcvuXBwTDiGzC7O8-ofV2LAvkws-LRIqKF6WRZ3KoPG1iTEDDhel3XXAGCyfRFCMXH3KiQ"
+  "signature": "lnf8Wz5M_B4dVTOOjT0aQa0ZSqEbTZVGb1HU_dk1tJ4eCbkCB8lmO0wJXc07Ys8gKqqb3TS4tKUbnwwKo3_Dw3FGYjbDqDE7rBtdc0lqi6fKSecff2ujVCi2U2dLjX78_h7U0LP1XbJuhkjdBYa-_mwiygAXf0j8cilXTigbTWJfgqcziVmkJzl9a_5HJ8HYF5ohdGmVBhOfyRrwGikYoHEQB6Ye_6jwTD_IQsUJe0eYdD4xAdA7C2awZAvhdYduKXit7WSyGuEhbyKopsm6WVZz4BkjWDjcJ2S7Xjb6RxPCGc_nNiAMsGT1nG9MIj-oGYy8gIWPSLEyF_6sk8hiaQ"
 }
 </pre><a href="#appendix-A.2-5" class="pilcrow">¶</a>
 </div>
+<p id="appendix-A.2-6"><strong>Delegated Access Token</strong>:<a href="#appendix-A.2-6" class="pilcrow">¶</a></p>
+<div class="lang-sourcecode sourcecode" id="appendix-A.2-7">
+<pre>
+{
+  "protected": {
+    "_comment": "to be base64url-encoded",
+    "alg": "RS256",
+    "typ": "JWT",
+    "kid": "delegation-key-2-sub"
+  },
+  "payload": {
+    "_comment": "to be base64url-encoded",
+    "sub": "https://dp1.example.com",
+    "aud": "https://res1.example.com",
+    "iat": 1772184788,
+    "exp": 1772188388,
+    "scope": "email:read",
+    "delegationToken": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImRlbGVnYXRpb24ta2V5LTIifQ.eyJhdWQiOiJodHRwczovL3JlczEuZXhhbXBsZS5jb20iLCJpYXQiOjE3NzIxODExODgsImV4cCI6MTc3Mjc4MjM4OCwibWF4X2RlbGVnYXRpb25fZGVwdGgiOjEsInNjb3BlIjoiZW1haWw6cmVhZCBlbWFpbDp3cml0ZSIsImRlbGVnYXRpb25Ub2tlbiI6ImV5SmhiR2NpT2lKU1V6STFOaUlzSW5SNWNDSTZJa3BYVkNJc0ltdHBaQ0k2SW1GekxXdGxlUzB5SW4wLmV5SnBjM01pT2lKb2RIUndjem92TDJGek1TNWxlR0Z0Y0d4bExtTnZiU0lzSW5OMVlpSTZJblZ6WlhKQVpYaGhiWEJzWlM1amIyMGlMQ0poZFdRaU9pSm9kSFJ3Y3pvdkwzSmxjekV1WlhoaGJYQnNaUzVqYjIwaUxDSnBZWFFpT2pFM056SXhOemMxT0Rnc0ltVjRjQ0k2TVRjM05EYzJPVFU0T0N3aWMyTnZjR1VpT2lKbGJXRnBiRHB5WldGa0lHVnRZV2xzT25keWFYUmxJR1Z0WVdsc09uTmxibVFpTENKa1pXeGxaMkYwYVc5dVgydGxlU0k2ZXlKcmRIa2lPaUpTVTBFaUxDSnVJam9pTTA4eFJWWmhMVjk2YzBWT1QyaDViSEU1T1hCMVMycEdOazVDY1RoVE9FNTBkemx6ZFdaNVEwSTVUSEpVVTNNdGVGSnZSRkUzV0RaeVdXSlFSVTl1TlVVdE5rRlRXbmxWVnpKMlJuaE1ZV05xTUZkcGNqQTFhSHB1Ykc1bVVreFNWRzFLYUhWa05HbHROVU5QWmtGb2RXbFFaVXd3VFdKek0xZEdUR1JDWmxkV1IxaFRVREpQTlZWT2EyUTNaRW95UzNGMVpIRjRUa1k0TVU1eWREVXhVbkJ0VUZJMU9YQlZXbE16VWtWbVFWbG5kSEZvVVRBM1YzVkRWSHBrTWxad1JuUjBVRVoxY2tSVGFWZGpjbWw1UlV4T1pHZHpWRGwzWVhBd2JubGpaVk5XVEZGbldUbGFaMUl3Vm5aemJVaHFYMHhWUzJsbE1YUTFVa05xVkhOaFRVaEtTRFo0TTFGSk1IUnFTMGM1VUhOaWFXd3dUMUpzYUVFNVYwVm5UMDgyUlRaTFQwTmZVM1JGUW01TFgwNTBZakpCY2tkUVJHcHNUbEI2VkhGWFQyVmxaWFk0TkUxTk9GWllaRko2Y0ZSTVQzSlNiVWhSSWl3aVpTSTZJa0ZSUVVJaWZTd2liV0Y0WDJSbGJHVm5ZWFJwYjI1ZlpHVndkR2dpT2pOOS5wMU9qSlEydEFTdUZQUENYemRidVNIYVppUFRGMmpNMVpfTXkyX3FQeDBJQUFKSjVSVm85S20yaEZlWGpxcUdjamtHNXdFRnhNd19xOEpPNDhPOWJWYUtOQmExa18tVW9CeGY1S2xNcGxkTUZJVXlWNEQ4U3Vnc2hoNzNpcVZpaTVIVzJNWTR1UzVHajQ2R0RVY1gxTlFSZzhMVzZXYTR6c28wU1BmSWZ1blhGMGR2QkcyNGNDVW9JRk9yMU56cnlaN09jVnQ5a2RDNF91WEdvU21qdEdsMVhzUnZnYjIxNmZaRnVaVjBGODh6V0ZzRGNCWm40aThxR2NCUzJYQUhqVzRqYkg3WTFPOGR2bDJoMGFmZnRtTmtHMlpnSFBsM3Boal9pLXVuUXNBeGhDVUlfOE1qdGZGNWl3ZTU4NnVRd18xaUVEMklVbEVYT2dYLUxkNUdnVHcifQ.lnf8Wz5M_B4dVTOOjT0aQa0ZSqEbTZVGb1HU_dk1tJ4eCbkCB8lmO0wJXc07Ys8gKqqb3TS4tKUbnwwKo3_Dw3FGYjbDqDE7rBtdc0lqi6fKSecff2ujVCi2U2dLjX78_h7U0LP1XbJuhkjdBYa-_mwiygAXf0j8cilXTigbTWJfgqcziVmkJzl9a_5HJ8HYF5ohdGmVBhOfyRrwGikYoHEQB6Ye_6jwTD_IQsUJe0eYdD4xAdA7C2awZAvhdYduKXit7WSyGuEhbyKopsm6WVZz4BkjWDjcJ2S7Xjb6RxPCGc_nNiAMsGT1nG9MIj-oGYy8gIWPSLEyF_6sk8hiaQ"
+  },
+  "signature": "mn-0y0F3lx0IM-60UsBp1_M7uRhdT28dPqxt6-s1OnjM-obyF-p5XbQV9jI5Q56X4cb3jLl6RkM789ODTGt5y4QNdOA2WhlS0WldSOzYkV1Xj2yrC0mZakYCHTpzzgvfeUjeNj-fDWmtgRb2Lfm6Z6dguT071WQkaIyH4IW5xVxroqbn1tFM07uX3huIV9tC_iS926rWaDW7eQDm1nhhjS_QSgUcTF1eJy7hOjEtzs70iij5bQU-B9nn6OfXdpb1jO5vx3lCSnZfL2h2EaQYK3CbjrflbDnIYKtJ0NMx5D03KRcv_uPlG5HHRL5cuMz8eToKc08rc0Qs5PxDbeqV4A"
+}
+</pre><a href="#appendix-A.2-7" class="pilcrow">¶</a>
+</div>
 </section>
 </div>
+</section>
+</div>
+<div id="integration-with-step-up-authorization">
+<section id="appendix-B">
+      <h2 id="name-integration-with-step-up-au">
+<a href="#appendix-B" class="section-number selfRef">Appendix B. </a><a href="#name-integration-with-step-up-au" class="section-name selfRef">Integration with Step-Up Authorization</a>
+      </h2>
+<p id="appendix-B-1">This specification can be used together with step-up authorization <span>[<a href="#I-D.lombardo-oauth-step-up-authz-challenge-proto" class="cite xref">I-D.lombardo-oauth-step-up-authz-challenge-proto</a>]</span>. When a resource server returns an <code>insufficient_authorization</code> error, the client can create a new delegated access token with the required permissions from its existing delegation token.<a href="#appendix-B-1" class="pilcrow">¶</a></p>
+<p id="appendix-B-2">This is particularly useful for AI agents that hold a delegation token. Upon receiving a step-up authorization challenge, the agent can automatically create a new delegated access token with the additional authorization_details required by the resource server, without requiring the user to re-authenticate.<a href="#appendix-B-2" class="pilcrow">¶</a></p>
+<p id="appendix-B-3">Resource servers that support both delegated authorization and step-up challenges <span class="bcp14">SHOULD</span> use the <code>body_instructions</code> parameter to specify the exact authorization_details or scope required.<a href="#appendix-B-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="use-cases">
-<section id="appendix-B">
+<section id="appendix-C">
       <h2 id="name-use-cases">
-<a href="#appendix-B" class="section-number selfRef">Appendix B. </a><a href="#name-use-cases" class="section-name selfRef">Use Cases</a>
+<a href="#appendix-C" class="section-number selfRef">Appendix C. </a><a href="#name-use-cases" class="section-name selfRef">Use Cases</a>
       </h2>
 <div id="delegating-subset-of-access-rights-to-specialized-ai-agents">
-<section id="appendix-B.1">
+<section id="appendix-C.1">
         <h3 id="name-delegating-subset-of-access">
-<a href="#appendix-B.1" class="section-number selfRef">B.1. </a><a href="#name-delegating-subset-of-access" class="section-name selfRef">Delegating Subset of Access Rights to Specialized AI Agents</a>
+<a href="#appendix-C.1" class="section-number selfRef">C.1. </a><a href="#name-delegating-subset-of-access" class="section-name selfRef">Delegating Subset of Access Rights to Specialized AI Agents</a>
         </h3>
-<p id="appendix-B.1-1">Enterprise Identity and Access Management systems often employ Role Based Access Control (RBAC) or Attribute Based Access Control (ABAC), assigning a set of minimal permissions to the employee based on its role, department, or other attributes. AI Agent can be an employee's personal assistant, or a virtual employee of a certain department in general. An Agent's delegated permissions CAN be long-termed, but <span class="bcp14">MUST NOT</span> be a direct inheritance of all its owner's access right. Rather, they <span class="bcp14">SHOULD</span> be a subset of its owner, bound to specfic service/API/database/codebase according to its specialty and dedicated workflow.<a href="#appendix-B.1-1" class="pilcrow">¶</a></p>
+<p id="appendix-C.1-1">Enterprise Identity and Access Management systems often employ Role Based Access Control (RBAC) or Attribute Based Access Control (ABAC), assigning a set of minimal permissions to the employee based on their role, department, or other attributes. AI Agent can be an employee's personal assistant, or a virtual employee of a certain department in general. The permissions delegated to an AI agent CAN be long-term, but an AI agent <span class="bcp14">MUST NOT</span> directly inherit all its owner's access rights. Rather, they <span class="bcp14">SHOULD</span> be a subset of its owner, bound to specific service/API/database/codebase according to its specialty and dedicated workflow.<a href="#appendix-C.1-1" class="pilcrow">¶</a></p>
 <span id="name-ai-agents"></span><table class="center" id="table-1">
           <caption>
 <a href="#table-1" class="selfRef">Table 1</a>:
@@ -2311,12 +2552,12 @@ Authorization: Bearer mF_9.B5f-4.1JqM
 </section>
 </div>
 <div id="thirdparty-analytics-platform-integrated-in-an-enterprise-saas">
-<section id="appendix-B.2">
+<section id="appendix-C.2">
         <h3 id="name-thirdparty-analytics-platfo">
-<a href="#appendix-B.2" class="section-number selfRef">B.2. </a><a href="#name-thirdparty-analytics-platfo" class="section-name selfRef">Third‑Party Analytics Platform Integrated in an Enterprise SaaS</a>
+<a href="#appendix-C.2" class="section-number selfRef">C.2. </a><a href="#name-thirdparty-analytics-platfo" class="section-name selfRef">Third‑Party Analytics Platform Integrated in an Enterprise SaaS</a>
         </h3>
-<p id="appendix-B.2-1">In this scenario, a corporate customer uses a Software-as-a-Service (SaaS) Customer Relationship Management (CRM) application. The customer wishes to gain business insights by granting a specialized third-party analytics platform limited access to its CRM data.<a href="#appendix-B.2-1" class="pilcrow">¶</a></p>
-<p id="appendix-B.2-2">The CRM application obtains a delegation token from the enterprise's identity provider. It then creates a narrowly scoped delegated access token for the analytics service. This token only permits read access to a predefined, non-sensitive subset of customer data (e.g., names and identifiers, but not personal email addresses). The analytics platform uses this token to pull data, generates an aggregated business intelligence report, and delivers it back to the CRM application for the corporate customer to view.<a href="#appendix-B.2-2" class="pilcrow">¶</a></p>
+<p id="appendix-C.2-1">In this scenario, a corporate customer uses a Software-as-a-Service (SaaS) Customer Relationship Management (CRM) application. The customer wishes to gain business insights by granting a specialized third-party analytics platform limited access to its CRM data.<a href="#appendix-C.2-1" class="pilcrow">¶</a></p>
+<p id="appendix-C.2-2">The CRM application obtains a delegation token from the enterprise's identity provider. It then creates a narrowly scoped delegated access token for the analytics service. This token only permits read access to a predefined, non-sensitive subset of customer data (e.g., names and identifiers, but not personal email addresses). The analytics platform uses this token to pull data, generates an aggregated business intelligence report, and delivers it back to the CRM application for the corporate customer to view.<a href="#appendix-C.2-2" class="pilcrow">¶</a></p>
 <span id="name-enterprise-saas"></span><table class="center" id="table-2">
           <caption>
 <a href="#table-2" class="selfRef">Table 2</a>:
@@ -2360,7 +2601,7 @@ Authorization: Bearer mF_9.B5f-4.1JqM
 </section>
 </div>
 <div id="authors-addresses">
-<section id="appendix-C">
+<section id="appendix-D">
       <h2 id="name-authors-addresses">
 <a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
       </h2>

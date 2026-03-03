@@ -5,11 +5,11 @@
 oauth                                                              R. Li
 Internet-Draft                                                   H. Wang
 Intended status: Informational                       Huawei Int. Pte Ltd
-Expires: 15 May 2026                                              C. Liu
+Expires: 4 September 2026                                         C. Liu
                                                      Huawei Technologies
                                                                    T. Li
                                                      Huawei Int. Pte Ltd
-                                                        11 November 2025
+                                                            3 March 2026
 
 
                    OAuth 2.0 Delegated Authorization
@@ -56,11 +56,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 15 May 2026.
+   This Internet-Draft will expire on 4 September 2026.
 
 Copyright Notice
 
-   Copyright (c) 2025 IETF Trust and the persons identified as the
+   Copyright (c) 2026 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -82,33 +82,42 @@ Table of Contents
      5.1.  Delegated Party Metadata Attributes
      5.2.  Delegated Party Metadata Example
      5.3.  WWW-Authenticate
-   6.  Acquiring Delegation Tokens
-     6.1.  Authorization Code Grant
-     6.2.  Other Grant Types
-   7.  Creating Delegated Access Tokens
-   8.  Using Delegated Access Tokens
-   9.  Verification of Delegated Access Tokens
-     9.1.  Local Verification
-     9.2.  Token Introspection
-   10. Security Considerations
-   11. Operational Considerations
-   12. IANA Considerations
-     12.1.  Well-Known URIs Registry
-     12.2.  OAuth Parameters Registry
-     12.3.  OAuth Access Token Types Registry
-     12.4.  HTTP Field Name Registry
-     12.5.  OAuth Delegated Party Metadata Registry
-       12.5.1.  Registration Template
-       12.5.2.  Initial Registry Contents
-   13. References
-     13.1.  Normative References
-     13.2.  Informative References
+   6.  Delegation Tokens and Delegated Access Tokens
+     6.1.  Delegation Tokens
+       6.1.1.  Top Level Delegation Token
+     6.2.  Delegated Access Tokens
+   7.  Acquiring Delegation Tokens
+     7.1.  Authorization Code Grant
+     7.2.  Other Grant Types
+   8.  Creating Delegated Access Tokens
+   9.  Using Delegated Access Tokens
+   10. Verification of Delegated Access Tokens
+     10.1.  Local Verification
+     10.2.  Token Introspection
+   11. Privacy Considerations
+     11.1.  Privacy Benefits
+     11.2.  Relationship to Token Exchange
+     11.3.  Trade-offs
+   12. Security Considerations
+   13. Operational Considerations
+   14. IANA Considerations
+     14.1.  Well-Known URIs Registry
+     14.2.  OAuth Parameters Registry
+     14.3.  OAuth Access Token Types Registry
+     14.4.  HTTP Field Name Registry
+     14.5.  OAuth Delegated Party Metadata Registry
+       14.5.1.  Registration Template
+       14.5.2.  Initial Registry Contents
+   15. References
+     15.1.  Normative References
+     15.2.  Informative References
    Appendix A.  Token Format
      A.1.  Example 1
      A.2.  Example 2
-   Appendix B.  Use Cases
-     B.1.  Delegating Subset of Access Rights to Specialized AI Agents
-     B.2.  Third-Party Analytics Platform Integrated in an Enterprise
+   Appendix B.  Integration with Step-Up Authorization
+   Appendix C.  Use Cases
+     C.1.  Delegating Subset of Access Rights to Specialized AI Agents
+     C.2.  Third-Party Analytics Platform Integrated in an Enterprise
            SaaS
    Authors' Addresses
 
@@ -161,8 +170,8 @@ Table of Contents
       delegation token's privileges and a more limited lifespan.
 
    *Delegation Key*:  A cryptographic key bound to the delegation token,
-      used by the client to sign or encrypt delegated access tokens.
-      The delegation key is presented in the token request as the
+      used by the client to sign delegated access tokens.  The
+      delegation key is presented in the token request as the
       delegation_key parameter.
 
 4.  Overview
@@ -371,13 +380,114 @@ Table of Contents
    WWW-Authenticate: Bearer delegated_party_metadata=\
      "https://dp.example.com/.well-known/oauth-delegated-party"
 
-6.  Acquiring Delegation Tokens
+6.  Delegation Tokens and Delegated Access Tokens
+
+   This section defines the properties of delegation tokens and
+   delegated access tokens.  The delegated authorization framework uses
+   a hierarchical token structure where tokens form a chain: a
+   delegation token can be used to create subordinate tokens, which can
+   either be another delegation token (to continue the chain) or a
+   delegated access token (to access protected resources).  The top-
+   level token in the chain is issued by the authorization server, while
+   subordinate tokens are created by clients.
+
+6.1.  Delegation Tokens
+
+   A delegation token is a token that can be used to create subordinate
+   tokens.  It contains a max_delegation_depth claim that limits the
+   maximum length of the delegation chain.
+
+   *delegation_key*:  The cryptographic key bound to the delegation
+      token, used by the client to sign subordinate tokens (either
+      another delegation token or a delegated access token).  The value
+      is a JSON object representing the public key, using key format as
+      defined in [RFC7517].  This claim MUST be present in delegation
+      tokens.  The corresponding private key is held by the client and
+      used to create subordinate tokens.  Subordinate tokens MUST
+      include the parent delegation token in the delegation_token claim,
+      creating a verifiable chain from the top-level token to the
+      subordinate token.
+
+   *max_delegation_depth*:  OPTIONAL.  Integer value indicating the
+      maximum depth of the delegation chain.  If not present, the
+      delegation chain is unrestricted.  When a client creates a
+      subordinate token from a delegation token:
+
+   *  If the parent delegation token has a max_delegation_depth value,
+      the subordinate delegation token MUST have a max_delegation_depth
+      value smaller than the parent's value.
+
+   *  If the parent delegation token does not have a
+      max_delegation_depth value, the subordinate delegation token MAY
+      set any max_delegation_depth value.
+
+   When max_delegation_depth reaches 1, the subordinate token MUST be a
+   delegated access token (no further delegation is allowed).
+
+   The scope / authorization_details, aud, exp, and nbf claims MAY be
+   present in delegation tokens and can be reduced in subordinate
+   tokens.
+
+   *scope* / *authorization_details*:  The scope (as defined in
+      [RFC8693]) or authorization details (as defined in [RFC9396]) of
+      the delegation token.  When creating a subordinate token, the
+      client MAY reduce the scope or authorization_details to a subset
+      of the parent token's permissions.
+
+   *aud*:  The audience of the delegation token.  When creating a
+      subordinate token, the client MAY narrow the audience to a subset
+      of the parent token's audience.
+
+   *exp*:  The expiration time of the delegation token.  When creating a
+      subordinate token, the client MUST set an expiration time that is
+      no later than the parent token's expiration time.
+
+   *nbf*:  The not-before time of the delegation token.  When creating a
+      subordinate token, the client MAY set a not-before time that is
+      later than the parent token's not-before time.
+
+6.1.1.  Top Level Delegation Token
+
+   The top-level delegation token is issued by the authorization server
+   and MAY contain the iss, sub, and jti claims.  If present, these
+   claims apply to the entire token chain.  These claims MUST NOT be
+   present in subordinate delegation tokens or delegated access tokens.
+
+   *iss*:  The issuer of the delegation token.  This claim applies to
+      all subordinate tokens in the chain.
+
+   *sub*:  The subject of the delegation token, typically representing
+      the resource owner or the client.  This claim applies to all
+      subordinate tokens in the chain.
+
+   *jti*:  Unique identifier for the delegation token.  This claim
+      applies to all subordinate tokens in the chain.
+
+   Subordinate delegation tokens and delegated access tokens MUST NOT
+   include the iss, sub, or jti claims.  Verifiers (resource servers and
+   delegated parties) SHALL consider these claims from the top-level
+   delegation token when validating the entire token chain.
+
+6.2.  Delegated Access Tokens
+
+   A delegated access token is a token used to access protected
+   resources.  It cannot be used to create subordinate tokens.
+
+   The scope, aud, exp, and nbf claims in delegated access tokens follow
+   the same rules as in delegation tokens, as described in Section 6.1.
+
+   *max_delegation_depth*:  Delegated access tokens do not need to
+      include a max_delegation_depth claim, even if the parent
+      delegation token has one.  If a delegated access token includes
+      max_delegation_depth, its value MUST be 0.
+
+7.  Acquiring Delegation Tokens
 
    The client requests a delegation token using standard OAuth 2.0 grant
    types with additional parameters to distinguish delegation requests
    from standard token requests.
 
-6.1.  Authorization Code Grant
+7.1.  Authorization Code Grant
 
    For authorization code grant type, the client MUST include a
    delegation=true parameter in the authorization request to indicate
@@ -391,10 +501,8 @@ Table of Contents
    the requested delegation token.
 
    In the token request, the client MUST include a delegation_key
-   parameter with the value of the delegation key.  This is normally a
-   public key for digital signature.  It can be extended to support
-   encryption public keys, or secret keys for MAC or symmetric
-   encryption.
+   parameter with the value of the delegation key.  The delegation key
+   is a public key for digital signature.
 
    Additionally, the client MAY include in the token request either a
    scope parameter, an authorization_details parameter, or both.  The
@@ -411,7 +519,7 @@ Table of Contents
    [RFC6749].  Use of Proof Key for Code Exchange (PKCE) [RFC7636] is
    RECOMMENDED.
 
-6.2.  Other Grant Types
+7.2.  Other Grant Types
 
    Other OAuth 2.0 grant types, such as the refresh token grant or
    client credentials grant, MAY support delegated authorization by
@@ -420,7 +528,7 @@ Table of Contents
    is authorized to request delegation tokens using the given grant
    type.
 
-7.  Creating Delegated Access Tokens
+8.  Creating Delegated Access Tokens
 
    The client creates delegated access tokens by:
 
@@ -430,7 +538,7 @@ Table of Contents
        privileges.
 
    3.  Applying cryptographic protection using the delegation key
-       (digital signature, encryption or MAC).
+       (digital signature).
 
    The client MUST include the delegation token in the delegation_token
    attribute of the delegated access token.
@@ -447,7 +555,7 @@ Table of Contents
    delegated parties, via techniques similar to OAuth 2.0 mTLS [RFC8705]
    or OAuth 2.0 DPoP [RFC9449].
 
-8.  Using Delegated Access Tokens
+9.  Using Delegated Access Tokens
 
    When the client accesses a delegated resource on the delegated party,
    the client MUST include the delegated access token as a bearer token
@@ -476,13 +584,13 @@ Table of Contents
    Host: resource.example.com
    Authorization: Bearer mF_9.B5f-4.1JqM
 
-9.  Verification of Delegated Access Tokens
+10.  Verification of Delegated Access Tokens
 
    Resource servers verify delegated access tokens through either local
    validation using pre-configured public keys or remote validation via
    token introspection [RFC7662] at the authorization server.
 
-9.1.  Local Verification
+10.1.  Local Verification
 
    The resource server verifies delegated access tokens by:
 
@@ -504,14 +612,69 @@ Table of Contents
        and the delegated access token's permissions cover the resource
        request.
 
-9.2.  Token Introspection
+10.2.  Token Introspection
 
    The resource server sends the delegated access token to the
-   authorization server via the token introspection endpoint.  The
-   authorization server verifies the delegated access token against its
-   keys.
+   authorization server via the token introspection endpoint [RFC7662].
+   The authorization server verifies the delegated access token against
+   its keys.
 
-10.  Security Considerations
+11.  Privacy Considerations
+
+   This section describes the privacy properties of the local delegation
+   approach defined in this specification.
+
+11.1.  Privacy Benefits
+
+   When a client creates delegated access tokens locally using a
+   delegation token, the authorization server only observes the initial
+   delegation token request.  After that, the client can independently
+   issue subordinate tokens without further authorization server
+   interaction.  This provides the following privacy benefits:
+
+   *  *Minimized Authorization Server Visibility*: The authorization
+      server does not learn which delegated parties are authorized, what
+      resources they access, or when they access them.
+
+   *  *No Access Pattern Correlation*: The authorization server cannot
+      track usage patterns or correlate activities across different
+      delegated parties.
+
+   *  *Reduced Data Collection*: The authorization server stores only
+      metadata about the initial delegation token, not about each
+      delegated access token.
+
+   *  *Network Traffic Reduction*: Fewer network round-trips to the
+      authorization server reduce exposure to network surveillance.
+
+11.2.  Relationship to Token Exchange
+
+   Token Exchange [RFC8693] provides a mechanism for delegating access
+   by having the client exchange one token for another at the
+   authorization server.  That approach requires authorization server
+   involvement for each delegation event, which necessarily exposes
+   delegation metadata to the authorization server.  The local
+   delegation approach in this specification performs delegation
+   entirely on the client side after the initial token issuance,
+   providing an alternative with different privacy characteristics.
+
+11.3.  Trade-offs
+
+   While local delegation provides significant privacy benefits,
+   implementations should consider:
+
+   *  *Client Responsibility*: The client must securely protect the
+      delegation key and properly enforce delegation rules.
+
+   *  *Auditability*: Deployments requiring delegation event audits can
+      implement client-side logging rather than relying on authorization
+      server monitoring.
+
+   *  *Revocation*: If a delegation key is compromised, the
+      authorization server may need to revoke the entire delegation
+      token.
+
+12.  Security Considerations
 
    This specification extends OAuth 2.0 to support delegated
    authorization through hierarchical token issuance.  While this
@@ -540,7 +703,7 @@ Table of Contents
       internal information.  Authorization servers SHOULD enforce rate
       limiting and audit token issuance and validation activities.
 
-11.  Operational Considerations
+13.  Operational Considerations
 
    Deployments of this specification should consider the following
    operational aspects:
@@ -566,9 +729,9 @@ Table of Contents
       existing OAuth 2.0 features such as PKCE, Rich Authorization
       Requests, and sender-constrained tokens.
 
-12.  IANA Considerations
+14.  IANA Considerations
 
-12.1.  Well-Known URIs Registry
+14.1.  Well-Known URIs Registry
 
    This specification registers the following entry in the "Well-Known
    URIs" registry:
@@ -583,7 +746,7 @@ Table of Contents
 
    *  *Related information*: (none)
 
-12.2.  OAuth Parameters Registry
+14.2.  OAuth Parameters Registry
 
    This specification registers the following parameters in the "OAuth
    Parameters" registry:
@@ -608,7 +771,7 @@ Table of Contents
 
    *  *Reference*: [this document]
 
-12.3.  OAuth Access Token Types Registry
+14.3.  OAuth Access Token Types Registry
 
    This specification registers the following parameters in the "OAuth
    Access Token Types" registry:
@@ -623,7 +786,7 @@ Table of Contents
 
    *  *Reference*: [this document]
 
-12.4.  HTTP Field Name Registry
+14.4.  HTTP Field Name Registry
 
    This specification registers the following parameters in the
    "Hypertext Transfer Protocol (HTTP) Field Name" registry:
@@ -636,14 +799,14 @@ Table of Contents
 
    *  *Reference*: [this document]
 
-12.5.  OAuth Delegated Party Metadata Registry
+14.5.  OAuth Delegated Party Metadata Registry
 
    This specification establishes the "OAuth Delegated Party Metadata"
-   registry for OAuth 2.0 dalagated party metadata names.  The registry
-   records the dalagated party metadata parameter and a reference to the
+   registry for OAuth 2.0 delegated party metadata names.  The registry
+   records the delegated party metadata parameter and a reference to the
    specification that defines it.
 
-12.5.1.  Registration Template
+14.5.1.  Registration Template
 
    *Metadata Name*:  The name requested (e.g., "resource").  This name
       is case sensitive.  Names may not match other registered names in
@@ -663,7 +826,7 @@ Table of Contents
       used to retrieve copies of the documents.  An indication of the
       relevant sections may also be included but is not required.
 
-12.5.2.  Initial Registry Contents
+14.5.2.  Initial Registry Contents
 
    *Resources:*
 
@@ -721,9 +884,9 @@ Table of Contents
 
    *  *Specification Document(s)*: [this document]
 
-13.  References
+15.  References
 
-13.1.  Normative References
+15.1.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -786,6 +949,11 @@ Table of Contents
               (URIs)", RFC 8615, DOI 10.17487/RFC8615, May 2019,
               <https://www.rfc-editor.org/rfc/rfc8615>.
 
+   [RFC8693]  Jones, M., Nadalin, A., Campbell, B., Ed., Bradley, J.,
+              and C. Mortimore, "OAuth 2.0 Token Exchange", RFC 8693,
+              DOI 10.17487/RFC8693, January 2020,
+              <https://www.rfc-editor.org/rfc/rfc8693>.
+
    [RFC8705]  Campbell, B., Bradley, J., Sakimura, N., and T.
               Lodderstedt, "OAuth 2.0 Mutual-TLS Client Authentication
               and Certificate-Bound Access Tokens", RFC 8705,
@@ -817,7 +985,15 @@ Table of Contents
               DOI 10.17487/RFC9728, April 2025,
               <https://www.rfc-editor.org/rfc/rfc9728>.
 
-13.2.  Informative References
+   [I-D.lombardo-oauth-step-up-authz-challenge-proto]
+              Lombardo, J., Babeanu, A., Zehavi, Y., and G. Fletcher,
+              "OAuth 2.0 step-up authorization challenge proto", Work in
+              Progress, Internet-Draft, draft-lombardo-oauth-step-up-
+              authz-challenge-proto-02, 30 June 2025,
+              <https://datatracker.ietf.org/doc/html/draft-lombardo-
+              oauth-step-up-authz-challenge-proto-02>.
+
+15.2.  Informative References
 
    [RFC8792]  Watsen, K., Auerswald, E., Farrel, A., and Q. Wu,
               "Handling Long Lines in Content of Internet-Drafts and
@@ -827,10 +1003,10 @@ Table of Contents
 Appendix A.  Token Format
 
    The example tokens in this section are shown in Flattened JSON
-   Serialization [RFC7515] [RFC7516], un-base64url-encoded/unencrypted,
-   and with comments for ease of reading.  When used as JWTs [RFC7519],
-   they should be represented in Compact Serialization [RFC7515]
-   [RFC7516].  Similarly, they can be represented as CWTs [RFC8392].
+   Serialization [RFC7515] [RFC7516], un-base64url-encoded and with
+   comments for ease of reading.  When used as JWTs [RFC7519], they
+   should be represented in Compact Serialization [RFC7515] [RFC7516].
+   Similarly, they can be represented as CWTs [RFC8392].
 
 A.1.  Example 1
 
@@ -852,16 +1028,16 @@ A.1.  Example 1
        "iss": "https://as1.example.com",
        "sub": "user@example.com",
        "aud": "https://res1.example.com",
-       "iat": 1760946495,
-       "exp": 1763538495,
+       "iat": 1772177588,
+       "exp": 1774769588,
        "scope": "email:read email:send",
        "delegation_key": {
          "kty": "RSA",
-         "n": "xoGV-drpIhwQ9Q3M5ouoA4Y76j4r0c2YcJoPT2qUd8UxV1PZH61TGZUbdUAdQLqi7Pik3GwTk34b6Xxb2-UkW3zoaBx_2FXXfVWwSVbfxi4RCbFP-rWGlbyYTRILj6CJM5JXI8VQdcSF8yfPZVytw-aKU-5k4RddKxgyMwkWNCShWPa_H2WRsDzcy88pE-8q1cg6hbaq5GTywdiSeGWrjMYebQqIN-V63bX2aiOHhFvPVpEoI7AlxlrQd7aJtFwfuRl-0FxJH-2ITrnHFZaFAdoJqvFSD3OKZNkECBpuDL-DHcZUZfEyr4Rvb3WB0iuHHfHXzhbzqAt3NbZalmdQNw",
+         "n": "0Z5t3Rwhfz4MJxdNzg2I6Bsf9H_3kcMKtH6iwJsLV2DKO1MVcHb6wsxHZpqRePjm5Q1-pImr4pT67hCHyAR6kS4QbTrBZcjSe8lsvZIiifiBVWZxz8ZAfdj6EFSOWhFLZ0GVqe9NMslwX1hHOwmhRmMjGjexISPsZk5qN3gwqmD36H1GS-rE-cWlXI9f4pVcCdYqE0rfhZ7hDn5mrpWWY8wJuQa2jFqX-Fhyvt_Zh-qaa5Wp8cLJPS_ceAcLeS5mOYE58beelp51PuCDpq7a9fN4K_EpcSD7Ay0GrJxgN_VcLA7DgOAuU6zYDzk2KnmQ3qz35Tj5hy8jDHgF1AaSTw",
          "e": "AQAB"
        }
      },
-     "signature": "1gR7TSa8ft8Wt4ZA9HuLFTYW2uAw86X2pFRrq9jDoQQ"
+     "signature": "SBwdWhy4dissabBRoyyxMxRuVUbsFYv_1HZFeROLh5A"
    }
 
    *Delegated Access Token*:
@@ -875,50 +1051,71 @@ A.1.  Example 1
      },
      "payload": {
        "_comment": "to be base64url-encoded",
-       "iss": "user@example.com",
        "sub": "https://dp1.example.com",
        "aud": "https://res1.example.com",
-       "iat": 1760950095,
-       "exp": 1760953695,
+       "iat": 1772181188,
+       "exp": 1772184788,
        "scope": "email:read",
-       "delegationToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImFzLWtleS0xIn0.eyJpc3MiOiJodHRwczovL2FzMS5leGFtcGxlLmNvbSIsInN1YiI6InVzZXJAZXhhbXBsZS5jb20iLCJhdWQiOiJodHRwczovL3JlczEuZXhhbXBsZS5jb20iLCJpYXQiOjE3NjA5NDY0OTUsImV4cCI6MTc2MzUzODQ5NSwic2NvcGUiOiJlbWFpbDpyZWFkIGVtYWlsOnNlbmQiLCJkZWxlZ2F0aW9uX2tleSI6eyJrdHkiOiJSU0EiLCJuIjoieG9HVi1kcnBJaHdROVEzTTVvdW9BNFk3Nmo0cjBjMlljSm9QVDJxVWQ4VXhWMVBaSDYxVEdaVWJkVUFkUUxxaTdQaWszR3dUazM0YjZYeGIyLVVrVzN6b2FCeF8yRlhYZlZXd1NWYmZ4aTRSQ2JGUC1yV0dsYnlZVFJJTGo2Q0pNNUpYSThWUWRjU0Y4eWZQWlZ5dHctYUtVLTVrNFJkZEt4Z3lNd2tXTkNTaFdQYV9IMldSc0R6Y3k4OHBFLThxMWNnNmhiYXE1R1R5d2RpU2VHV3JqTVllYlFxSU4tVjYzYlgyYWlPSGhGdlBWcEVvSTdBbHhsclFkN2FKdEZ3ZnVSbC0wRnhKSC0ySVRybkhGWmFGQWRvSnF2RlNEM09LWk5rRUNCcHVETC1ESGNaVVpmRXlyNFJ2YjNXQjBpdUhIZkhYemhienFBdDNOYlphbG1kUU53IiwiZSI6IkFRQUIifX0.1gR7TSa8ft8Wt4ZA9HuLFTYW2uAw86X2pFRrq9jDoQQ"
+       "delegationToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImFzLWtleS0xIn0.eyJpc3MiOiJodHRwczovL2FzMS5leGFtcGxlLmNvbSIsInN1YiI6InVzZXJAZXhhbXBsZS5jb20iLCJhdWQiOiJodHRwczovL3JlczEuZXhhbXBsZS5jb20iLCJpYXQiOjE3NzIxNzc1ODgsImV4cCI6MTc3NDc2OTU4OCwic2NvcGUiOiJlbWFpbDpyZWFkIGVtYWlsOnNlbmQiLCJkZWxlZ2F0aW9uX2tleSI6eyJrdHkiOiJSU0EiLCJuIjoiMFo1dDNSd2hmejRNSnhkTnpnMkk2QnNmOUhfM2tjTUt0SDZpd0pzTFYyREtPMU1WY0hiNndzeEhacHFSZVBqbTVRMS1wSW1yNHBUNjdoQ0h5QVI2a1M0UWJUckJaY2pTZThsc3ZaSWlpZmlCVldaeHo4WkFmZGo2RUZTT1doRkxaMEdWcWU5Tk1zbHdYMWhIT3dtaFJtTWpHamV4SVNQc1prNXFOM2d3cW1EMzZIMUdTLXJFLWNXbFhJOWY0cFZjQ2RZcUUwcmZoWjdoRG41bXJwV1dZOHdKdVFhMmpGcVgtRmh5dnRfWmgtcWFhNVdwOGNMSlBTX2NlQWNMZVM1bU9ZRTU4YmVlbHA1MVB1Q0RwcTdhOWZONEtfRXBjU0Q3QXkwR3JKeGdOX1ZjTEE3RGdPQXVVNnpZRHprMktubVEzcXozNVRqNWh5OGpESGdGMUFhU1R3IiwiZSI6IkFRQUIifX0.SBwdWhy4dissabBRoyyxMxRuVUbsFYv_1HZFeROLh5A"
      },
-     "signature": "r5O4a3d3NMN7vZlOB9P4qPLbHyy12bZH5Ha3DZATa8NUdHYPJBMieiS1tqbhwfnTvwcSR_0Ac42dRHDrk8MWPkCl_9-bfYNvf9eGrcwSRn7889-pleH-QphxZG4Tsr8m2WlGM8VFnC9sjkhqGvmM9ZdC02GEaiptU9D859QU3-u-tvRdSgrHXeuLY2a3hgpWnj0j4gfgpug-VSvNB26vqCWwM4mwMGWYUPDabBaPp-KL38_M1T7q4wvFE0_KLvTSdozMe1ngkLewvSTBrnW1rULhXFk54j381wQ_ovaJhM1aAbWshb1AMzu-aiv0EZJjB1XlgORVh-KbId01TZQLwA"
+     "signature": "df5sTdp6j-ULv3To3yqYFFZWLrY41wu6jpKfsZdjMNMeRH3TXY5nSc-lhdFfJElVGnyCa5Rf9YGlvacGVy84maFCq0zhNTiLL8xBYieCKTAhmMuWZvIUZFBoE1KBj2YXskpnU6CFTKhALbW5lidZSGXdcEnygxwaumpO_AxlYghU8RQrQgF1wAsoDLcoun1-FROuHUzqKGWqYSbXe1lGJ3dTt5ftod7SjGqM2Quz4BvfQMpw82VVGq7YlvRJMuPe4ITUeikFNQ672bvVrjhwHUlglQ9HuFj5iroHqwr6dLtfKVDBtw33A_lCnsWfk4vPWDJ-1fy3Klj4hT_bhBIVJA"
    }
 
 A.2.  Example 2
 
-   In this example, the delegation token is a JWE token encrypted with
-   A128CBC-HS256, and the delegated access token is a JWS token signed
-   with ES256.
+   In this example, the delegation token chain consists of three tokens:
+   a top-level delegation token issued by the authorization server, a
+   subordinate delegation token created by the client, and a delegated
+   access token created from the subordinate token.  The top-level
+   delegation token has max_delegation_depth of 3, which allows for two
+   levels of delegation.
 
-   *Delegation Token*:
+   *Top-Level Delegation Token*:
 
    {
      "protected": {
        "_comment": "to be base64url-encoded",
-       "alg": "dir",
-       "enc": "A128CBC-HS256",
+       "alg": "RS256",
        "typ": "JWT",
        "kid": "as-key-2"
      },
-     "iv": "s99tD84KH1_kgbA2ArpUZg",
-     "ciphertext": {
-       "_comment": "to be encrypted",
+     "payload": {
+       "_comment": "to be base64url-encoded",
        "iss": "https://as1.example.com",
        "sub": "user@example.com",
        "aud": "https://res1.example.com",
-       "iat": 1760946495,
-       "exp": 1763538495,
-       "scope": "email:read email:send",
+       "iat": 1772177588,
+       "exp": 1774769588,
+       "scope": "email:read email:write email:send",
        "delegation_key": {
-         "kty": "EC",
-         "crv": "P-256",
-         "x": "iZgQ3t5EK4rVdkex6LAGfxB0deOHtE3-vb-OBxoFv88",
-         "y": "RQVYHkEWrTR6jckD7iHXnRRs60-u9ikSfVnM4epiOLY"
-       }
+         "kty": "RSA",
+         "n": "3O1EVa-_zsENOhylq99puKjF6NBq8S8Ntw9sufyCB9LrTSs-xRoDQ7X6rYbPEOn5E-6ASZyUW2vFxLacj0Wir05hznlnfRLRTmJhud4im5COfAhuiPeL0Mbs3WFLdBfWVGXSP2O5UNkd7dJ2KqudqxNF81Nrt51RpmPR59pUZS3REfAYgtqhQ07WuCTzd2VpFttPFurDSiWcriyELNdgsT9wap0nyceSVLQgY9ZgR0VvsmHj_LUKie1t5RCjTsaMHJH6x3QI0tjKG9Psbil0ORlhA9WEgOO6E6KOC_StEBnK_Ntb2ArGPDjlNPzTqWOeeev84MM8VXdRzpTLOrRmHQ",
+         "e": "AQAB"
+       },
+       "max_delegation_depth": 3
      },
-     "tag": "9Z4ONkwLwv3szT-eIKa4uQ"
+     "signature": "p1OjJQ2tASuFPPCXzdbuSHaZiPTF2jM1Z_My2_qPx0IAAJJ5RVo9Km2hFeXjqqGcjkG5wEFxMw_q8JO48O9bVaKNBa1k_-UoBxf5KlMpldMFIUyV4D8Sugshh73iqVii5HW2MY4uS5Gj46GDUcX1NQRg8LW6Wa4zso0SPfIfunXF0dvBG24cCUoIFOr1NzryZ7OcVt9kdC4_uXGoSmjtGl1XsRvgb216fZFuZV0F88zWFsDcBZn4i8qGcBS2XAHjW4jbH7Y1O8dvl2h0afftmNkG2ZgHPl3phj_i-unQsAxhCUI_8MjtfF5iwe586uQw_1iED2IUlEXOgX-Ld5GgTw"
+   }
+
+   *Subordinate Delegation Token*:
+
+   {
+     "protected": {
+       "_comment": "to be base64url-encoded",
+       "alg": "RS256",
+       "typ": "JWT",
+       "kid": "delegation-key-2"
+     },
+     "payload": {
+       "_comment": "to be base64url-encoded",
+       "aud": "https://res1.example.com",
+       "iat": 1772181188,
+       "exp": 1772782388,
+       "max_delegation_depth": 1,
+       "scope": "email:read email:write",
+       "delegationToken": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImFzLWtleS0yIn0.eyJpc3MiOiJodHRwczovL2FzMS5leGFtcGxlLmNvbSIsInN1YiI6InVzZXJAZXhhbXBsZS5jb20iLCJhdWQiOiJodHRwczovL3JlczEuZXhhbXBsZS5jb20iLCJpYXQiOjE3NzIxNzc1ODgsImV4cCI6MTc3NDc2OTU4OCwic2NvcGUiOiJlbWFpbDpyZWFkIGVtYWlsOndyaXRlIGVtYWlsOnNlbmQiLCJkZWxlZ2F0aW9uX2tleSI6eyJrdHkiOiJSU0EiLCJuIjoiM08xRVZhLV96c0VOT2h5bHE5OXB1S2pGNk5CcThTOE50dzlzdWZ5Q0I5THJUU3MteFJvRFE3WDZyWWJQRU9uNUUtNkFTWnlVVzJ2RnhMYWNqMFdpcjA1aHpubG5mUkxSVG1KaHVkNGltNUNPZkFodWlQZUwwTWJzM1dGTGRCZldWR1hTUDJPNVVOa2Q3ZEoyS3F1ZHF4TkY4MU5ydDUxUnBtUFI1OXBVWlMzUkVmQVlndHFoUTA3V3VDVHpkMlZwRnR0UEZ1ckRTaVdjcml5RUxOZGdzVDl3YXAwbnljZVNWTFFnWTlaZ1IwVnZzbUhqX0xVS2llMXQ1UkNqVHNhTUhKSDZ4M1FJMHRqS0c5UHNiaWwwT1JsaEE5V0VnT082RTZLT0NfU3RFQm5LX050YjJBckdQRGpsTlB6VHFXT2VlZXY4NE1NOFZYZFJ6cFRMT3JSbUhRIiwiZSI6IkFRQUIifSwibWF4X2RlbGVnYXRpb25fZGVwdGgiOjN9.p1OjJQ2tASuFPPCXzdbuSHaZiPTF2jM1Z_My2_qPx0IAAJJ5RVo9Km2hFeXjqqGcjkG5wEFxMw_q8JO48O9bVaKNBa1k_-UoBxf5KlMpldMFIUyV4D8Sugshh73iqVii5HW2MY4uS5Gj46GDUcX1NQRg8LW6Wa4zso0SPfIfunXF0dvBG24cCUoIFOr1NzryZ7OcVt9kdC4_uXGoSmjtGl1XsRvgb216fZFuZV0F88zWFsDcBZn4i8qGcBS2XAHjW4jbH7Y1O8dvl2h0afftmNkG2ZgHPl3phj_i-unQsAxhCUI_8MjtfF5iwe586uQw_1iED2IUlEXOgX-Ld5GgTw"
+     },
+     "signature": "lnf8Wz5M_B4dVTOOjT0aQa0ZSqEbTZVGb1HU_dk1tJ4eCbkCB8lmO0wJXc07Ys8gKqqb3TS4tKUbnwwKo3_Dw3FGYjbDqDE7rBtdc0lqi6fKSecff2ujVCi2U2dLjX78_h7U0LP1XbJuhkjdBYa-_mwiygAXf0j8cilXTigbTWJfgqcziVmkJzl9a_5HJ8HYF5ohdGmVBhOfyRrwGikYoHEQB6Ye_6jwTD_IQsUJe0eYdD4xAdA7C2awZAvhdYduKXit7WSyGuEhbyKopsm6WVZz4BkjWDjcJ2S7Xjb6RxPCGc_nNiAMsGT1nG9MIj-oGYy8gIWPSLEyF_6sk8hiaQ"
    }
 
    *Delegated Access Token*:
@@ -926,36 +1123,53 @@ A.2.  Example 2
    {
      "protected": {
        "_comment": "to be base64url-encoded",
-       "alg": "ES256",
+       "alg": "RS256",
        "typ": "JWT",
-       "kid": "delegation-key-2"
+       "kid": "delegation-key-2-sub"
      },
      "payload": {
        "_comment": "to be base64url-encoded",
-       "iss": "user@example.com",
        "sub": "https://dp1.example.com",
        "aud": "https://res1.example.com",
-       "iat": 1760950095,
-       "exp": 1760953695,
+       "iat": 1772184788,
+       "exp": 1772188388,
        "scope": "email:read",
-       "delegationToken": "eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwidHlwIjoiSldUIiwia2lkIjoiYXMta2V5LTIifQ..s99tD84KH1_kgbA2ArpUZg.DS5aM1uuKpFFacu7rIvKOYnA-6BRPy6jyZ-3uF8bpplWJkCQmsAi8KqS-qTZuHWNfIWw7ulK-a8rWhfPPfLrgdXky6Ujc_3vm5YXRXmwxlaNJlhr2LexPXsTX2wA_3aIo9c0b5kQB2MHqeI5ucJDSdERCV2AaQTgl7vRmJhZ_FAY5cnd2URHEsqnm5usrywzGMLw5CnXg2MBl1jWxiHp-PmzOmRPHks4jFV2es2jjr-yB5PlX2d-OBCU2hauM_JjtnYOhByiXmAVVE6XKjJHXYM-d5q3JheTDg5gA4f1Io38_r2KA3pW07CF94Nx3i7VRxaFRSVYuNxlEhUx0vxOIlwRBa3_ZOK4Kkg-og66ADs73RuBg91cCthbr63NfIdEXmmYKG2Nx3DehojbVKZQrg.9Z4ONkwLwv3szT-eIKa4uQ"
+       "delegationToken": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImRlbGVnYXRpb24ta2V5LTIifQ.eyJhdWQiOiJodHRwczovL3JlczEuZXhhbXBsZS5jb20iLCJpYXQiOjE3NzIxODExODgsImV4cCI6MTc3Mjc4MjM4OCwibWF4X2RlbGVnYXRpb25fZGVwdGgiOjEsInNjb3BlIjoiZW1haWw6cmVhZCBlbWFpbDp3cml0ZSIsImRlbGVnYXRpb25Ub2tlbiI6ImV5SmhiR2NpT2lKU1V6STFOaUlzSW5SNWNDSTZJa3BYVkNJc0ltdHBaQ0k2SW1GekxXdGxlUzB5SW4wLmV5SnBjM01pT2lKb2RIUndjem92TDJGek1TNWxlR0Z0Y0d4bExtTnZiU0lzSW5OMVlpSTZJblZ6WlhKQVpYaGhiWEJzWlM1amIyMGlMQ0poZFdRaU9pSm9kSFJ3Y3pvdkwzSmxjekV1WlhoaGJYQnNaUzVqYjIwaUxDSnBZWFFpT2pFM056SXhOemMxT0Rnc0ltVjRjQ0k2TVRjM05EYzJPVFU0T0N3aWMyTnZjR1VpT2lKbGJXRnBiRHB5WldGa0lHVnRZV2xzT25keWFYUmxJR1Z0WVdsc09uTmxibVFpTENKa1pXeGxaMkYwYVc5dVgydGxlU0k2ZXlKcmRIa2lPaUpTVTBFaUxDSnVJam9pTTA4eFJWWmhMVjk2YzBWT1QyaDViSEU1T1hCMVMycEdOazVDY1RoVE9FNTBkemx6ZFdaNVEwSTVUSEpVVTNNdGVGSnZSRkUzV0RaeVdXSlFSVTl1TlVVdE5rRlRXbmxWVnpKMlJuaE1ZV05xTUZkcGNqQTFhSHB1Ykc1bVVreFNWRzFLYUhWa05HbHROVU5QWmtGb2RXbFFaVXd3VFdKek0xZEdUR1JDWmxkV1IxaFRVREpQTlZWT2EyUTNaRW95UzNGMVpIRjRUa1k0TVU1eWREVXhVbkJ0VUZJMU9YQlZXbE16VWtWbVFWbG5kSEZvVVRBM1YzVkRWSHBrTWxad1JuUjBVRVoxY2tSVGFWZGpjbWw1UlV4T1pHZHpWRGwzWVhBd2JubGpaVk5XVEZGbldUbGFaMUl3Vm5aemJVaHFYMHhWUzJsbE1YUTFVa05xVkhOaFRVaEtTRFo0TTFGSk1IUnFTMGM1VUhOaWFXd3dUMUpzYUVFNVYwVm5UMDgyUlRaTFQwTmZVM1JGUW01TFgwNTBZakpCY2tkUVJHcHNUbEI2VkhGWFQyVmxaWFk0TkUxTk9GWllaRko2Y0ZSTVQzSlNiVWhSSWl3aVpTSTZJa0ZSUVVJaWZTd2liV0Y0WDJSbGJHVm5ZWFJwYjI1ZlpHVndkR2dpT2pOOS5wMU9qSlEydEFTdUZQUENYemRidVNIYVppUFRGMmpNMVpfTXkyX3FQeDBJQUFKSjVSVm85S20yaEZlWGpxcUdjamtHNXdFRnhNd19xOEpPNDhPOWJWYUtOQmExa18tVW9CeGY1S2xNcGxkTUZJVXlWNEQ4U3Vnc2hoNzNpcVZpaTVIVzJNWTR1UzVHajQ2R0RVY1gxTlFSZzhMVzZXYTR6c28wU1BmSWZ1blhGMGR2QkcyNGNDVW9JRk9yMU56cnlaN09jVnQ5a2RDNF91WEdvU21qdEdsMVhzUnZnYjIxNmZaRnVaVjBGODh6V0ZzRGNCWm40aThxR2NCUzJYQUhqVzRqYkg3WTFPOGR2bDJoMGFmZnRtTmtHMlpnSFBsM3Boal9pLXVuUXNBeGhDVUlfOE1qdGZGNWl3ZTU4NnVRd18xaUVEMklVbEVYT2dYLUxkNUdnVHcifQ.lnf8Wz5M_B4dVTOOjT0aQa0ZSqEbTZVGb1HU_dk1tJ4eCbkCB8lmO0wJXc07Ys8gKqqb3TS4tKUbnwwKo3_Dw3FGYjbDqDE7rBtdc0lqi6fKSecff2ujVCi2U2dLjX78_h7U0LP1XbJuhkjdBYa-_mwiygAXf0j8cilXTigbTWJfgqcziVmkJzl9a_5HJ8HYF5ohdGmVBhOfyRrwGikYoHEQB6Ye_6jwTD_IQsUJe0eYdD4xAdA7C2awZAvhdYduKXit7WSyGuEhbyKopsm6WVZz4BkjWDjcJ2S7Xjb6RxPCGc_nNiAMsGT1nG9MIj-oGYy8gIWPSLEyF_6sk8hiaQ"
      },
-     "signature": "hlxIMOUb_Wdjh53VPcvuXBwTDiGzC7O8-ofV2LAvkws-LRIqKF6WRZ3KoPG1iTEDDhel3XXAGCyfRFCMXH3KiQ"
+     "signature": "mn-0y0F3lx0IM-60UsBp1_M7uRhdT28dPqxt6-s1OnjM-obyF-p5XbQV9jI5Q56X4cb3jLl6RkM789ODTGt5y4QNdOA2WhlS0WldSOzYkV1Xj2yrC0mZakYCHTpzzgvfeUjeNj-fDWmtgRb2Lfm6Z6dguT071WQkaIyH4IW5xVxroqbn1tFM07uX3huIV9tC_iS926rWaDW7eQDm1nhhjS_QSgUcTF1eJy7hOjEtzs70iij5bQU-B9nn6OfXdpb1jO5vx3lCSnZfL2h2EaQYK3CbjrflbDnIYKtJ0NMx5D03KRcv_uPlG5HHRL5cuMz8eToKc08rc0Qs5PxDbeqV4A"
    }
 
-Appendix B.  Use Cases
+Appendix B.  Integration with Step-Up Authorization
 
-B.1.  Delegating Subset of Access Rights to Specialized AI Agents
+   This specification can be used together with step-up authorization
+   [I-D.lombardo-oauth-step-up-authz-challenge-proto].  When a resource
+   server returns an insufficient_authorization error, the client can
+   create a new delegated access token with the required permissions
+   from its existing delegation token.
+
+   This is particularly useful for AI agents that hold a delegation
+   token.  Upon receiving a step-up authorization challenge, the agent
+   can automatically create a new delegated access token with the
+   additional authorization_details required by the resource server,
+   without requiring the user to re-authenticate.
+
+   Resource servers that support both delegated authorization and step-
+   up challenges SHOULD use the body_instructions parameter to specify
+   the exact authorization_details or scope required.
+
+Appendix C.  Use Cases
+
+C.1.  Delegating Subset of Access Rights to Specialized AI Agents
 
    Enterprise Identity and Access Management systems often employ Role
    Based Access Control (RBAC) or Attribute Based Access Control (ABAC),
-   assigning a set of minimal permissions to the employee based on its
+   assigning a set of minimal permissions to the employee based on their
    role, department, or other attributes.  AI Agent can be an employee's
    personal assistant, or a virtual employee of a certain department in
-   general.  An Agent's delegated permissions CAN be long-termed, but
-   MUST NOT be a direct inheritance of all its owner's access right.
-   Rather, they SHOULD be a subset of its owner, bound to specfic
-   service/API/database/codebase according to its specialty and
+   general.  The permissions delegated to an AI agent CAN be long-term,
+   but an AI agent MUST NOT directly inherit all its owner's access
+   rights.  Rather, they SHOULD be a subset of its owner, bound to
+   specific service/API/database/codebase according to its specialty and
    dedicated workflow.
 
      +==================+===========================================+
@@ -979,7 +1193,7 @@ B.1.  Delegating Subset of Access Rights to Specialized AI Agents
 
                             Table 1: AI Agents
 
-B.2.  Third-Party Analytics Platform Integrated in an Enterprise SaaS
+C.2.  Third-Party Analytics Platform Integrated in an Enterprise SaaS
 
    In this scenario, a corporate customer uses a Software-as-a-Service
    (SaaS) Customer Relationship Management (CRM) application.  The
