@@ -19,11 +19,22 @@
 6. Delegated  |     |     Access                               
       Resource|     |     Token                                
               |     |                                          
-           +--+-----v--+ 5. Delegated         +---------------+
-           |           |      Access Token    |               |
-           |           +---------------------->               |
-           | Delegated |                      |   Resource    |
-           |   Party   | 6. Protected         |    Server     |
-           |           |      Resource        |               |
-           |           <----------------------+               |
-           +-----------+                      +---------------+
+       +------+-----v-----+ 5. Delegated       +---------------+
+       |                  |      Access Token  |               |
+       |  Intermediary    +------------------->| Downstream /  |
+       | Resource Server  |                    |    Target     |
+       |                  | 6. Target          |   Resource    |
+       |                  |    Protected       |    Server(s)  |
+       |                  |    Resource        |               |
+       |                  <--------------------+               |
+       +------------------+                    +-------+-------+
+                                                       |
+                                                       | Optional subsequent
+                                                       | downstream request
+                                                       v
+                                               +---------------+
+                                               | Downstream /  |
+                                               |    Target     |
+                                               |   Resource    |
+                                               |    Server     |
+                                               +---------------+
