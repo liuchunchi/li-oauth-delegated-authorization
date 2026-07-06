@@ -73,7 +73,7 @@ Delegated authorization enables a client to delegate a subset of its granted pri
 
 OAuth 2.0 {{RFC6749}} provides a framework for authorizing third-party applications to access protected resources on behalf of a resource owner. However, in existing implementations, access tokens issued to clients often contain excessive permissions that exceed actual requirements, creating security vulnerabilities and potential data exposure risks.
 
-This specification extends OAuth 2.0 with a delegated authorization framework that enables clients to create subordinate access tokens with restricted permissions. This approach addresses the problem of over-privileged access tokens by implementing a two-token architecture that decouples initial authorization from final resource access.
+This specification extends OAuth 2.0 with a delegated authorization framework that enables clients to create subordinate access tokens with restricted permissions. This approach addresses the problem of over-privileged access tokens by implementing a token-chain architecture that decouples the initial authorization from the final resource access, allowing delegated tokens to be created and used flexibly.
 
 # Requirements Language
 
@@ -123,54 +123,55 @@ The delegated authorization framework introduces a hierarchical token structure 
 
 Both delegation token and delegated access token can be JSON Web Tokens (JWTs) {{RFC7519}} or CBOR Web Tokens (CWTs) {{RFC8392}}.
 
-# Delegated Party Metadata
+# Protected Resource Metadata Discovery
 
-Before the OAuth 2.0 client retrieves a delegation token and generates a delegated access token for the delegated party, the client needs to obtain the authorization server endpoint and the permissions needed by the delegated party. Such information can be manually configured into the client, or it can be dynamically discovered through delegated party metadata.
+Before the client retrieves a delegation token and generates a delegated access token for the delegated party, the client needs to determine the permissions required by the delegated party and the identity of the target resource servers. Such information can be manually configured into the client, or it can be dynamically discovered using OAuth 2.0 Protected Resource Metadata {{RFC9728}}.
 
-Delegated party metadata enables OAuth 2.0 clients to obtain information needed to interact with a delegated party. The structure of the metadata format is similar to "OAuth 2.0 Authorization Server Metadata" {{RFC8414}} and "OAuth 2.0 Protected Resource Metadata" {{RFC9728}}.
+The delegated party publishes its metadata at the standard well-known URI as defined in {{RFC9728}}. The metadata describes the delegated party as a protected resource and includes information about the target resource servers it accesses and the authorization requirements for each.
 
-The delegated party metadata is retrieved from a well-known {{RFC8615}} location as a JSON {{RFC8259}} document. By default, the well-known URI string used is `/.well-known/oauth-delegated-party`.
+The client retrieves this metadata and uses it to determine the permissions to request in the authorization request to the authorization server (see Section 7).
 
-## Delegated Party Metadata Attributes
+## Delegated Resources
 
-**resources**:
-: **RECOMMENDED**. JSON array containing a list of target protected resources' resource identifiers, as defined in {{RFC9728}}. Either this attribute or **authorization_servers** defined below MUST be present.
+This specification defines a new protected resource metadata field, `delegated_resources`, that indicates the target resource servers and the authorization requirements the delegated party needs for each.
 
-**authorization_servers**:
-: **OPTIONAL**. JSON array containing a list of OAuth authorization server issuer identifiers, as defined in {{RFC8414}}. Either this attribute or **resources** defined above MUST be present.
+**delegated_resources**:
+: JSON object mapping target protected resource identifiers (as defined in {{RFC9728}}) to the authorization requirements for each. Each target resource value is a JSON object containing the `scopes_supported` and/or `authorization_details_types_supported` fields, following the structure defined in {{RFC9728}}. The `scopes_supported` field lists scope values {{RFC6749}} that the delegated party may need at the target resource server. The `authorization_details_types_supported` field lists authorization details types (as defined in {{RFC9396}}) that the delegated party may need at the target resource server.
 
-**permissions_supported**:
-: **RECOMMENDED**. JSON object indicating the permissions the delegated party may request. The `scopes` attribute lists supported scope values {{RFC6749}}; the `authorization_details` attribute lists supported rich authorization request objects as defined in {{RFC9396}}. These guide the client in constructing valid authorization and token requests. Either the `scopes` attribute or the `authorization_details` attribute must be present.
+## Metadata Example
 
-**api_permissions**:
-: **RECOMMENDED**. JSON object mapping API endpoints (resource identifiers) to the permissions required to access them. Each value can include `scopes` and/or `authorization_details` to specify the permissions needed for that endpoint/resource.
-
-**delegated_party_documentation**:
-: **OPTIONAL**: URL of a page containing human-readable information that developers might want or need to know when using the delegated party. The value of this field MAY be internationalized.
-
-## Delegated Party Metadata Example
-
-The following is a non-normative example delegated party metadata:
+The following is a non-normative example of a delegated party publishing protected resource metadata that indicates it is a delegated party and describes its target resource server requirements:
 
 ~~~sourcecode
-{::include diagrams/delegated-party-metadata-example.jsonc}
+{
+  "resource": "https://analytics.example.com",
+  "scopes_supported": ["openid"],
+  "authorization_servers": ["https://idp.example.com"],
+
+  "delegated_resources": {
+    "https://crm.example.com": {
+      "scopes_supported": ["read:contacts", "read:reports"],
+      "authorization_details_types_supported": ["data"]
+    }
+  }
+}
 ~~~
+
+In this example, the delegated party (`https://analytics.example.com`) indicates that to serve its delegated resources, it needs access to the CRM resource server (`https://crm.example.com`) with the `read:contacts` and `read:reports` scopes, and supports `data`-type authorization details as defined in {{RFC9396}}.
+
+The client uses this information to:
+
+1. Request a delegation token from the authorization server with appropriate permissions (see Section 7).
+2. Create delegated access tokens with the correct permissions, audience, and target resource identifiers (see Section 8).
 
 ## WWW-Authenticate
 
-Upon receipt of a request for a delegated resource that lacks credentials, the delegated party can reply with a challenge using the 401 (Unauthorized) status code ({{RFC9110}} Section 15.5.2) and the `WWW-Authenticate` header field ({{RFC9110}} Section 11.6.1).
-
-This specification introduces a new parameter in the `WWW-Authenticate` HTTP response header field to indicate the delegated party metadata URL:
-
-**delegated_party_metadata**:
-: The URL of the delegated party metadata.
-
-The response below is an example of a `WWW-Authenticate` header that includes the delegated party metadata URL. NOTE: '\\' line wrapping per {{RFC8792}}.
+As defined in {{RFC9728}}, upon receipt of a request for a delegated resource that lacks credentials, the delegated party can reply with a challenge using the 401 (Unauthorized) status code ({{RFC9110}} Section 15.5.2) and the `WWW-Authenticate` header field ({{RFC9110}} Section 11.6.1), including the `resource_metadata` parameter with the URL of its protected resource metadata:
 
 ~~~
 HTTP/1.1 401 Unauthorized
-WWW-Authenticate: Bearer delegated_party_metadata=\
-  "https://dp.example.com/.well-known/oauth-delegated-party"
+WWW-Authenticate: Bearer resource_metadata=\
+  "https://dp.example.com/.well-known/oauth-protected-resource"
 ~~~
 
 # Delegation Tokens and Delegated Access Tokens
@@ -340,6 +341,7 @@ This specification extends OAuth 2.0 to support delegated authorization through 
 - Clients MUST protect the delegation key, as compromise allows an attacker to mint valid delegated access tokens within the scope of the delegation token.
 - Delegated access tokens SHOULD have short lifetimes and be bound to specific audiences, methods, and sender keys (e.g., via DPoP or mTLS) to mitigate replay and token leakage risks. Resource servers MUST validate both the delegation token and the delegated access token, ensuring the latter does not exceed the former’s permissions.
 - Token introspection CAN be used in scenarios where the tokens are kept opaque from the delegated party and the resource server. If employed, token introspection responses MUST NOT reveal sensitive internal information. Authorization servers SHOULD enforce rate limiting and audit token issuance and validation activities.
+- Protected resource metadata published by delegated parties is self-declared. Clients and authorization servers SHOULD verify that delegated access tokens remain within the intended scope of delegation. Clients SHOULD not trust `delegated_resources` metadata from untrusted delegated parties without independent verification of the delegated party's identity and authorization requirements.
 
 # Operational Considerations
 
@@ -347,21 +349,11 @@ Deployments of this specification should consider the following operational aspe
 
 - **Key Management**: Clients MUST securely store and rotate delegation keys. Authorization servers SHOULD support key rotation for delegation tokens and provide mechanisms to revoke compromised keys.
 - **Token Lifetimes**: Delegation tokens SHOULD have longer lifetimes than delegated access tokens to reduce authorization server load, and SHOULD be refreshable using refresh tokens.
-- **Metadata Caching**: Delegated party metadata at the well-known URI /.well-known/oauth-delegated-party can be cached by clients; a reasonable default TTL (e.g., 24 hours) is RECOMMENDED.
+- **Metadata Caching**: Protected resource metadata published by delegated parties at `/.well-known/oauth-protected-resource` can be cached by clients; a reasonable default TTL (e.g., 24 hours) is RECOMMENDED.
 - **Error Handling**: Delegated parties and resource servers SHOULD provide clear error responses (e.g., invalid token, insufficient scope) without exposing implementation details.
 - **Interoperability**: Implementers SHOULD ensure compatibility with existing OAuth 2.0 features such as PKCE, Rich Authorization Requests, and sender-constrained tokens.
 
 # IANA Considerations
-
-## Well-Known URIs Registry
-
-This specification registers the following entry in the "Well-Known URIs" registry:
-
-- **URI suffix**: oauth-delegated-party
-- **Reference**: [this document]
-- **Status**: permanent
-- **Change controller**: IETF
-- **Related information**: (none)
 
 ## OAuth Parameters Registry
 
@@ -400,58 +392,12 @@ This specification registers the following parameters in the "Hypertext Transfer
 - **Structured Type**: (none)
 - **Reference**: [this document]
 
-## OAuth Delegated Party Metadata Registry
+## OAuth Protected Resource Metadata Registry
 
-This specification establishes the "OAuth Delegated Party Metadata" registry for OAuth 2.0 delegated party metadata names. The registry records the delegated party metadata parameter and a reference to the specification that defines it.
+This specification registers the following entry in the "OAuth Protected Resource Metadata" registry defined in {{RFC9728}}:
 
-### Registration Template
-
-**Metadata Name**:
-: The name requested (e.g., "resource"). This name is case sensitive. Names may not match other registered names in a case-insensitive manner unless the designated experts state that there is a compelling reason to allow an exception.
-
-**Metadata Description**:
-: Brief description of the metadata (e.g., "Resource identifier URL").
-
-**Change Controller**:
-: For IETF Stream RFCs, list "IETF". For others, give the name of the responsible party. Other details (e.g., postal address, email address, home page URI) may also be included.
-
-**Specification Document(s)**:
-: Reference to the document or documents that specify the parameter, preferably including URIs that can be used to retrieve copies of the documents. An indication of the relevant sections may also be included but is not required.
-
-### Initial Registry Contents
-
-**Resources:**
-
-- **Metadata Name**: resources
-- **Metadata Description**: JSON array containing a list of target protected resources' resource identifier URLs
-- **Change Controller**: IETF
-- **Specification Document(s)**: [this document]
-
-**Authorization Servers:**
-
-- **Metadata Name**: authorization_servers
-- **Metadata Description**: JSON array containing a list of authorization server issuer identifiers
-- **Change Controller**: IETF
-- **Specification Document(s)**: [this document]
-
-**Supported Permissions:**
-
-- **Metadata Name**: permissions_supported
-- **Metadata Description**: JSON object indicating the permissions the delegated party may request
-- **Change Controller**: IETF
-- **Specification Document(s)**: [this document]
-
-**API Permissions:**
-
-- **Metadata Name**: api_permissions
-- **Metadata Description**: JSON object mapping API endpoints (resource identifiers) to the permissions required to access them
-- **Change Controller**: IETF
-- **Specification Document(s)**: [this document]
-
-**Delegated Party Documentation:**
-
-- **Metadata Name**: delegated_party_documentation
-- **Metadata Description**: URL of a page containing human-readable information that developers might want or need to know when using the delegated party
+- **Metadata Name**: delegated_resources
+- **Metadata Description**: JSON object mapping target protected resource identifiers to the authorization requirements for each. Each target resource value contains `scopes_supported` and/or `authorization_details_types_supported` fields as defined in {{RFC9728}}, indicating the permissions needed at that target resource server.
 - **Change Controller**: IETF
 - **Specification Document(s)**: [this document]
 
