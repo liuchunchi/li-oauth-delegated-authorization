@@ -195,37 +195,48 @@ Table of Contents
    while maintaining the security properties of the original
    authorization grant.
 
-              +-----------+ 1. Authorization     +---------------+
-              |           |      Request         |               |
-              |           +---------------------->               |
-              |           |                      |   Resource    |
-              |           | 2. Authorization     |     Owner     |
-              |           |      Grant           |               |
-              |           <----------------------+               |
-              |           |                      +---------------+
-              |  Client   |
-              |           | 3. Authorization     +---------------+
-              |           |      Grant           |               |
-              |           +---------------------->               |
-              |           |                      | Authorization |
-              |           | 4. Delegation        |     Server    |
-              |           |      Token           |               |
-              |           <----------------------+               |
-              +--^-----+--+                      +---------------+
-                 |     |5. Delegated
-   6. Delegated  |     |     Access
-         Resource|     |     Token
-                 |     |
-              +--+-----v--+ 5. Delegated         +---------------+
-              |           |      Access Token    |               |
-              |           +---------------------->               |
-              | Delegated |                      |   Resource    |
-              |   Party   | 6. Protected         |    Server     |
-              |           |      Resource        |               |
-              |           <----------------------+               |
-              +-----------+                      +---------------+
+           +-----------+ 1. Authorization     +---------------+
+           |           |      Request         |               |
+           |           +---------------------->               |
+           |           |                      |   Resource    |
+           |           | 2. Authorization     |     Owner     |
+           |           |      Grant           |               |
+           |           <----------------------+               |
+           |           |                      +---------------+
+           |  Client   |
+           |           | 3. Authorization     +---------------+
+           |           |      Grant           |               |
+           |           +---------------------->               |
+           |           |                      | Authorization |
+           |           | 4. Delegation        |     Server    |
+           |           |      Token           |               |
+           |           <----------------------+               |
+           +--^-----+--+                      +---------------+
+              |     |5. Delegated
+6. Delegated  |     |     Access
+      Resource|     |     Token
+              |     |
+       +------+-----v-----+ 5. Delegated       +---------------+
+       |                  |      Access Token  |               |
+       |  Intermediary    +------------------->| Downstream /  |
+       | Resource Server  |                    |    Target     |
+       |                  | 6. Target          |   Resource    |
+       |                  |    Protected       |    Server(s)  |
+       |                  |    Resource        |               |
+       |                  <--------------------+               |
+       +------------------+                    +-------+-------+
+                                                       |
+                                                       | Optional subsequent
+                                                       | downstream request
+                                                       v
+                                               +---------------+
+                                               | Downstream /  |
+                                               |    Target     |
+                                               |   Resource    |
+                                               |    Server     |
+                                               +---------------+
 
-          Figure 1: Delegated Authorization Framework Architecture
+       Figure 1: Delegated Authorization Framework Architecture
 
    1.  The client requests authorization from the resource owner.  The
        client indicates in the authorization request that the requested
