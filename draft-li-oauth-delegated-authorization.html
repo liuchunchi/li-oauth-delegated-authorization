@@ -10,7 +10,7 @@
 <meta content="Chunchi Peter Liu" name="author">
 <meta content="Tieyan Li" name="author">
 <meta content="
-       Delegated authorization enables a client to delegate a subset of its granted privileges to a subordinate access token (also known as a delegated access token). This mechanism allows the client to securely delegate authorization to a delegated party while maintaining fine-grained control over delegated permissions. 
+       Delegated authorization enables a client to delegate a subset of its granted privileges to a subordinate access token (also known as a delegated access token). This mechanism allows the client to securely delegate authorization to another application while maintaining fine-grained control over delegated permissions. 
     " name="description">
 <meta content="xml2rfc 3.34.0" name="generator">
 <meta content="draft-li-oauth-delegated-authorization-latest" name="ietf.draft">
@@ -1093,7 +1093,7 @@ svg {
 <h1 id="title">OAuth 2.0 Delegated Authorization</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">Delegated authorization enables a client to delegate a subset of its granted privileges to a subordinate access token (also known as a delegated access token). This mechanism allows the client to securely delegate authorization to a delegated party while maintaining fine-grained control over delegated permissions.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">Delegated authorization enables a client to delegate a subset of its granted privileges to a subordinate access token (also known as a delegated access token). This mechanism allows the client to securely delegate authorization to another application while maintaining fine-grained control over delegated permissions.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-about-this-document">
@@ -1175,13 +1175,13 @@ svg {
             <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-protected-resource-metadata" class="internal xref">Protected Resource Metadata Discovery</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1">
-                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="auto internal xref">5.1</a>.  <a href="#name-delegated-resources" class="internal xref">Delegated Resources</a></p>
+                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="auto internal xref">5.1</a>.  <a href="#name-the-delegated_resources-met" class="internal xref">The <code>delegated_resources</code> Metadata Field</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
-                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-metadata-example" class="internal xref">Metadata Example</a></p>
+                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-the-authorization_requireme" class="internal xref">The <code>authorization_requirements</code> Metadata Field</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3">
-                <p id="section-toc.1-1.5.2.3.1"><a href="#section-5.3" class="auto internal xref">5.3</a>.  <a href="#name-www-authenticate" class="internal xref">WWW-Authenticate</a></p>
+                <p id="section-toc.1-1.5.2.3.1"><a href="#section-5.3" class="auto internal xref">5.3</a>.  <a href="#name-metadata-example" class="internal xref">Metadata Example</a></p>
 </li>
             </ul>
 </li>
@@ -1334,19 +1334,19 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
       <h2 id="name-terminology">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-terminology" class="section-name selfRef">Terminology</a>
       </h2>
-<p id="section-3-1">This specification uses the following terms defined in OAuth 2.0 <span>[<a href="#RFC6749" class="cite xref">RFC6749</a>]</span>: authorization server, client, resource server, and resource owner.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-1">This specification uses the following terms defined in OAuth 2.0 <span>[<a href="#RFC6749" class="cite xref">RFC6749</a>]</span>: authorization server, client, resource server, and resource owner. A resource server can also act as a client when it accesses one or more downstream resource servers. This document refers to such an entity as an intermediary resource server: it is downstream from the client that invokes it, and acts as a client when making requests to resource servers that are farther downstream in the call chain. Intermediary resource servers can be chained.<a href="#section-3-1" class="pilcrow">¶</a></p>
 <p id="section-3-2">The following additional terms are used throughout this document:<a href="#section-3-2" class="pilcrow">¶</a></p>
 <span class="break"></span><dl class="dlParallel" id="section-3-3">
         <dt id="section-3-3.1">
-<strong>Delegated Party (DP)</strong>:</dt>
+<strong>Intermediary Resource Server</strong>:</dt>
         <dd style="margin-left: 1.5em" id="section-3-3.2">
-          <p id="section-3-3.2.1">An entity (e.g., a service, component, or application) authorized by the client to access protected resources on behalf of the resource owner.<a href="#section-3-3.2.1" class="pilcrow">¶</a></p>
+          <p id="section-3-3.2.1">A resource server that receives a request from a client and, to serve that request, acts as an OAuth client when accessing one or more downstream resource servers. It is downstream from its caller and upstream from the resource servers it invokes. A downstream resource server can itself be an intermediary resource server when it invokes another resource server farther downstream in the call chain.<a href="#section-3-3.2.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 <dt id="section-3-3.3">
-<strong>Delegated Resource</strong>:</dt>
+<strong>Target Resource Server</strong>:</dt>
         <dd style="margin-left: 1.5em" id="section-3-3.4">
-          <p id="section-3-3.4.1">A resource or API endpoint hosted by the delegated party that requires access to the resource owner’s protected data at a target resource server.<a href="#section-3-3.4.1" class="pilcrow">¶</a></p>
+          <p id="section-3-3.4.1">The resource server that receives a delegated access token from an upstream intermediary resource server for a particular downstream request and hosts the protected resource requested in that hop. This role is relative to a particular request: a target resource server for one hop can also act as an intermediary resource server for a subsequent downstream hop. It is downstream from the intermediary resource servers that precede it in that call chain.<a href="#section-3-3.4.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 <dt id="section-3-3.5">
@@ -1481,10 +1481,10 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
           <p id="section-4-3.4.1">The authorization server authenticates the client and validates the authorization grant, and if valid, issues a delegation token.<a href="#section-4-3.4.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-4-3.5">
-          <p id="section-4-3.5.1">The client calls the delegated party's API, presenting the delegated access token generated from the delegation token. The delegated access token is issued by the client using the delegation key. The delegated party requests the target protected resource from the resource server and presents the delegated access token.<a href="#section-4-3.5.1" class="pilcrow">¶</a></p>
+          <p id="section-4-3.5.1">The client calls an intermediary resource server's API, presenting the delegated access token generated from the delegation token. The delegated access token is issued by the client using the delegation key. The intermediary resource server can request protected resources from one or more downstream resource servers by presenting the delegated access token. A downstream resource server can itself be an intermediary resource server for a subsequent downstream request.<a href="#section-4-3.5.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-4-3.6">
-          <p id="section-4-3.6.1">The resource server validates the delegated access token, and if valid, serves the resource. The delegated party receives the resource, optionally transforms it into a service-specific response (also known as delegated resource), and returns it to the client.<a href="#section-4-3.6.1" class="pilcrow">¶</a></p>
+          <p id="section-4-3.6.1">A target resource server for a downstream request validates the delegated access token, and if valid, serves the resource. Responses propagate back through the intermediary resource servers, each of which can optionally transform a downstream response into a service-specific response, and ultimately return a response to the client.<a href="#section-4-3.6.1" class="pilcrow">¶</a></p>
 </li>
       </ol>
 <p id="section-4-4">Both delegation token and delegated access token can be JSON Web Tokens (JWTs) <span>[<a href="#RFC7519" class="cite xref">RFC7519</a>]</span> or CBOR Web Tokens (CWTs) <span>[<a href="#RFC8392" class="cite xref">RFC8392</a>]</span>.<a href="#section-4-4" class="pilcrow">¶</a></p>
@@ -1495,72 +1495,170 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
       <h2 id="name-protected-resource-metadata">
 <a href="#section-5" class="section-number selfRef">5. </a><a href="#name-protected-resource-metadata" class="section-name selfRef">Protected Resource Metadata Discovery</a>
       </h2>
-<p id="section-5-1">Before the client retrieves a delegation token and generates a delegated access token for the delegated party, the client needs to determine the permissions required by the delegated party and the identity of the target resource servers. Such information can be manually configured into the client, or it can be dynamically discovered using OAuth 2.0 Protected Resource Metadata <span>[<a href="#RFC9728" class="cite xref">RFC9728</a>]</span>.<a href="#section-5-1" class="pilcrow">¶</a></p>
-<p id="section-5-2">The delegated party publishes its metadata at the standard well-known URI as defined in <span>[<a href="#RFC9728" class="cite xref">RFC9728</a>]</span>. The metadata describes the delegated party as a protected resource and includes information about the target resource servers it accesses and the authorization requirements for each.<a href="#section-5-2" class="pilcrow">¶</a></p>
-<p id="section-5-3">The client retrieves this metadata and uses it to determine the permissions to request in the authorization request to the authorization server (see Section 7).<a href="#section-5-3" class="pilcrow">¶</a></p>
-<div id="delegated-resources">
+<p id="section-5-1">Before the client retrieves a delegation token and generates a delegated access token for an intermediary resource server, the client needs to determine the permissions required by that resource server for its own protected resources, the permissions required when accessing downstream resource servers, and the identity of those downstream resource servers. Such information can be manually configured into the client, or it can be dynamically discovered using OAuth 2.0 Protected Resource Metadata <span>[<a href="#RFC9728" class="cite xref">RFC9728</a>]</span>.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-2">Each resource server publishes its metadata at the standard well-known URI as defined in <span>[<a href="#RFC9728" class="cite xref">RFC9728</a>]</span>. The metadata describes the resource server as a protected resource. A client can determine that a resource server is an intermediary resource server when the metadata contains the <code>delegated_resources</code> key. The <code>delegated_resources</code> metadata field identifies any downstream resource servers the publishing resource server accesses and the authorization capabilities for each. If a downstream resource server is itself an intermediary resource server, the client can also retrieve that resource server's metadata to discover subsequent downstream requirements.<a href="#section-5-2" class="pilcrow">¶</a></p>
+<p id="section-5-3">The <code>authorization_requirements</code> metadata field identifies the authorization requirements for specific endpoints or operations. A client can use this field to request a delegation token and create delegated access tokens with the minimum permissions needed for the intended request. Discovery of protected resource metadata, including use of the <code>WWW-Authenticate</code> <code>resource_metadata</code> parameter, follows <span>[<a href="#RFC9728" class="cite xref">RFC9728</a>]</span>.<a href="#section-5-3" class="pilcrow">¶</a></p>
+<div id="the-delegatedresources-metadata-field">
 <section id="section-5.1">
-        <h3 id="name-delegated-resources">
-<a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-delegated-resources" class="section-name selfRef">Delegated Resources</a>
+        <h3 id="name-the-delegated_resources-met">
+<a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-the-delegated_resources-met" class="section-name selfRef">The <code>delegated_resources</code> Metadata Field</a>
         </h3>
-<p id="section-5.1-1">This specification defines a new protected resource metadata field, <code>delegated_resources</code>, that indicates the target resource servers and the authorization requirements the delegated party needs for each.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
+<p id="section-5.1-1">This specification defines a new protected resource metadata field, <code>delegated_resources</code>, that indicates the downstream resource servers and the authorization capabilities the publishing resource server needs for each.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
 <span class="break"></span><dl class="dlParallel" id="section-5.1-2">
           <dt id="section-5.1-2.1">
 <strong>delegated_resources</strong>:</dt>
           <dd style="margin-left: 1.5em" id="section-5.1-2.2">
-            <p id="section-5.1-2.2.1">JSON object mapping target protected resource identifiers (as defined in <span>[<a href="#RFC9728" class="cite xref">RFC9728</a>]</span>) to the authorization requirements for each. Each target resource value is a JSON object containing the <code>scopes_supported</code> and/or <code>authorization_details_types_supported</code> fields, following the structure defined in <span>[<a href="#RFC9728" class="cite xref">RFC9728</a>]</span>. The <code>scopes_supported</code> field lists scope values <span>[<a href="#RFC6749" class="cite xref">RFC6749</a>]</span> that the delegated party may need at the target resource server. The <code>authorization_details_types_supported</code> field lists authorization details types (as defined in <span>[<a href="#RFC9396" class="cite xref">RFC9396</a>]</span>) that the delegated party may need at the target resource server.<a href="#section-5.1-2.2.1" class="pilcrow">¶</a></p>
+            <p id="section-5.1-2.2.1">JSON object mapping downstream protected resource identifiers (as defined in <span>[<a href="#RFC9728" class="cite xref">RFC9728</a>]</span>) to the authorization capabilities for each. Each downstream resource value is a JSON object containing the following members:<a href="#section-5.1-2.2.1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-5.1-2.2.2">
+              <dt id="section-5.1-2.2.2.1">
+<strong>authorization_target</strong>:</dt>
+              <dd style="margin-left: 1.5em" id="section-5.1-2.2.2.2">
+                <p id="section-5.1-2.2.2.2.1"><span class="bcp14">OPTIONAL</span>. String identifying the protected resource to which the listed <code>scopes_supported</code> or <code>authorization_details_types_supported</code> apply. The value <code>self</code> indicates the downstream protected resource identified by the corresponding <code>delegated_resources</code> key. Any other value is a protected resource identifier as defined in <span>[<a href="#RFC9728" class="cite xref">RFC9728</a>]</span>. If omitted, the default value is <code>self</code>.<a href="#section-5.1-2.2.2.2.1" class="pilcrow">¶</a></p>
+</dd>
+              <dd class="break"></dd>
+<dt id="section-5.1-2.2.2.3">
+<strong>scopes_supported</strong>:</dt>
+              <dd style="margin-left: 1.5em" id="section-5.1-2.2.2.4">
+                <p id="section-5.1-2.2.2.4.1"><span class="bcp14">OPTIONAL</span>. JSON array of scope values <span>[<a href="#RFC6749" class="cite xref">RFC6749</a>]</span> that the publishing resource server may need at the <code>authorization_target</code>.<a href="#section-5.1-2.2.2.4.1" class="pilcrow">¶</a></p>
+</dd>
+              <dd class="break"></dd>
+<dt id="section-5.1-2.2.2.5">
+<strong>authorization_details_types_supported</strong>:</dt>
+              <dd style="margin-left: 1.5em" id="section-5.1-2.2.2.6">
+                <p id="section-5.1-2.2.2.6.1"><span class="bcp14">OPTIONAL</span>. JSON array of authorization details types <span>[<a href="#RFC9396" class="cite xref">RFC9396</a>]</span> that the publishing resource server may need at the <code>authorization_target</code>.<a href="#section-5.1-2.2.2.6.1" class="pilcrow">¶</a></p>
+</dd>
+            <dd class="break"></dd>
+</dl>
 </dd>
         <dd class="break"></dd>
 </dl>
+<p id="section-5.1-3">A downstream resource value <span class="bcp14">MUST</span> contain at least one of <code>scopes_supported</code> or <code>authorization_details_types_supported</code>.<a href="#section-5.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="the-authorizationrequirements-metadata-field">
+<section id="section-5.2">
+        <h3 id="name-the-authorization_requireme">
+<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-the-authorization_requireme" class="section-name selfRef">The <code>authorization_requirements</code> Metadata Field</a>
+        </h3>
+<p id="section-5.2-1">This specification defines a new protected resource metadata field, <code>authorization_requirements</code>, that indicates the authorization requirements for specific endpoints or operations of the publishing resource server. The requirements can describe permissions needed at the publishing resource server itself, permissions delegated to downstream resource servers, or both.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-5.2-2">
+          <dt id="section-5.2-2.1">
+<strong>authorization_requirements</strong>:</dt>
+          <dd style="margin-left: 1.5em" id="section-5.2-2.2">
+            <p id="section-5.2-2.2.1">JSON array of authorization requirement objects. Each object describes one endpoint or operation and the permissions required to access it. The following members are defined:<a href="#section-5.2-2.2.1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-5.2-2.2.2">
+              <dt id="section-5.2-2.2.2.1">
+<strong>methods</strong>:</dt>
+              <dd style="margin-left: 1.5em" id="section-5.2-2.2.2.2">
+                <p id="section-5.2-2.2.2.2.1"><span class="bcp14">OPTIONAL</span>. JSON array of HTTP methods to which this requirement applies. If omitted, the requirement applies independent of HTTP method.<a href="#section-5.2-2.2.2.2.1" class="pilcrow">¶</a></p>
+</dd>
+              <dd class="break"></dd>
+<dt id="section-5.2-2.2.2.3">
+<strong>path</strong>:</dt>
+              <dd style="margin-left: 1.5em" id="section-5.2-2.2.2.4">
+                <p id="section-5.2-2.2.2.4.1"><span class="bcp14">OPTIONAL</span>. Absolute path or path template identifying the endpoint to which this requirement applies. If omitted, the requirement applies to the operation as otherwise identified by the object.<a href="#section-5.2-2.2.2.4.1" class="pilcrow">¶</a></p>
+</dd>
+              <dd class="break"></dd>
+<dt id="section-5.2-2.2.2.5">
+<strong>operation</strong>:</dt>
+              <dd style="margin-left: 1.5em" id="section-5.2-2.2.2.6">
+                <p id="section-5.2-2.2.2.6.1"><span class="bcp14">OPTIONAL</span>. String identifying an application-level operation to which this requirement applies. This member is intended for APIs where the authorization requirement is associated with a named action rather than only with an HTTP path. The syntax and semantics of the operation identifier are deployment specific. For HTTP APIs where the method and path uniquely identify the protected action, <code>methods</code> and <code>path</code> are preferred.<a href="#section-5.2-2.2.2.6.1" class="pilcrow">¶</a></p>
+</dd>
+              <dd class="break"></dd>
+<dt id="section-5.2-2.2.2.7">
+<strong>scopes</strong>:</dt>
+              <dd style="margin-left: 1.5em" id="section-5.2-2.2.2.8">
+                <p id="section-5.2-2.2.2.8.1"><span class="bcp14">OPTIONAL</span>. JSON array of scope values <span>[<a href="#RFC6749" class="cite xref">RFC6749</a>]</span> required for the identified endpoint or operation at the publishing resource server.<a href="#section-5.2-2.2.2.8.1" class="pilcrow">¶</a></p>
+</dd>
+              <dd class="break"></dd>
+<dt id="section-5.2-2.2.2.9">
+<strong>authorization_details_types</strong>:</dt>
+              <dd style="margin-left: 1.5em" id="section-5.2-2.2.2.10">
+                <p id="section-5.2-2.2.2.10.1"><span class="bcp14">OPTIONAL</span>. JSON array of authorization details types <span>[<a href="#RFC9396" class="cite xref">RFC9396</a>]</span> required or accepted for the identified endpoint or operation at the publishing resource server.<a href="#section-5.2-2.2.2.10.1" class="pilcrow">¶</a></p>
+</dd>
+              <dd class="break"></dd>
+<dt id="section-5.2-2.2.2.11">
+<strong>authorization_details</strong>:</dt>
+              <dd style="margin-left: 1.5em" id="section-5.2-2.2.2.12">
+                <p id="section-5.2-2.2.2.12.1"><span class="bcp14">OPTIONAL</span>. JSON array of authorization detail objects <span>[<a href="#RFC9396" class="cite xref">RFC9396</a>]</span> that describe the required permissions for the identified endpoint or operation at the publishing resource server. This member can be used when the authorization details type alone is not sufficient to describe the minimum required permission.<a href="#section-5.2-2.2.2.12.1" class="pilcrow">¶</a></p>
+</dd>
+              <dd class="break"></dd>
+<dt id="section-5.2-2.2.2.13">
+<strong>delegated_resources</strong>:</dt>
+              <dd style="margin-left: 1.5em" id="section-5.2-2.2.2.14">
+                <p id="section-5.2-2.2.2.14.1"><span class="bcp14">OPTIONAL</span>. JSON object mapping downstream protected resource identifiers to delegated authorization requirement objects. This member describes permissions that the publishing resource server needs to receive in a delegated access token in order to call the specified downstream resource servers while serving the identified local endpoint or operation. Each delegated authorization requirement object <span class="bcp14">MAY</span> contain <code>authorization_target</code>, with the same semantics as in the <code>delegated_resources</code> metadata field, and identifies required permissions using <code>scopes</code>, <code>authorization_details_types</code>, or <code>authorization_details</code>.<a href="#section-5.2-2.2.2.14.1" class="pilcrow">¶</a></p>
+</dd>
+            <dd class="break"></dd>
+</dl>
+</dd>
+        <dd class="break"></dd>
+</dl>
+<p id="section-5.2-3">A top-level authorization requirement object <span class="bcp14">MUST</span> identify an endpoint or operation using <code>path</code>, <code>operation</code>, or both. Each top-level authorization requirement object <span class="bcp14">MUST</span> contain at least one of <code>scopes</code>, <code>authorization_details_types</code>, <code>authorization_details</code>, or <code>delegated_resources</code>. Each delegated authorization requirement object <span class="bcp14">MUST</span> contain at least one of <code>scopes</code>, <code>authorization_details_types</code>, or <code>authorization_details</code>. The <code>authorization_requirements</code> field is optional. Resource servers <span class="bcp14">MAY</span> omit it when authorization requirements are dynamic, confidential, or better conveyed through an authorization challenge.<a href="#section-5.2-3" class="pilcrow">¶</a></p>
+<p id="section-5.2-4">When both <code>path</code> and <code>operation</code> are present, <code>path</code> identifies the endpoint and <code>operation</code> further identifies the action within that endpoint.<a href="#section-5.2-4" class="pilcrow">¶</a></p>
+<p id="section-5.2-5">The <code>authorization_requirements</code> metadata is self-declared discovery information. It does not replace access control enforcement by resource servers, and clients <span class="bcp14">MUST NOT</span> assume that possession of the indicated permissions guarantees access to the identified endpoint or operation.<a href="#section-5.2-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="metadata-example">
-<section id="section-5.2">
+<section id="section-5.3">
         <h3 id="name-metadata-example">
-<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-metadata-example" class="section-name selfRef">Metadata Example</a>
+<a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-metadata-example" class="section-name selfRef">Metadata Example</a>
         </h3>
-<p id="section-5.2-1">The following is a non-normative example of a delegated party publishing protected resource metadata that indicates it is a delegated party and describes its target resource server requirements:<a href="#section-5.2-1" class="pilcrow">¶</a></p>
-<div class="lang-sourcecode sourcecode" id="section-5.2-2">
+<p id="section-5.3-1">The following is a non-normative example of a resource server publishing protected resource metadata that describes both its downstream resource server capabilities and endpoint-specific authorization requirements:<a href="#section-5.3-1" class="pilcrow">¶</a></p>
+<div class="lang-sourcecode sourcecode" id="section-5.3-2">
 <pre>
 {
   "resource": "https://analytics.example.com",
-  "scopes_supported": ["openid"],
+  "scopes_supported": ["openid", "analytics:summary"],
   "authorization_servers": ["https://idp.example.com"],
 
   "delegated_resources": {
     "https://crm.example.com": {
+      "authorization_target": "self",
       "scopes_supported": ["read:contacts", "read:reports"],
       "authorization_details_types_supported": ["data"]
     }
-  }
+  },
+
+  "authorization_requirements": [
+    {
+      "methods": ["GET"],
+      "path": "/summary",
+      "scopes": ["analytics:summary"]
+    },
+    {
+      "methods": ["GET"],
+      "path": "/reports/contacts",
+      "delegated_resources": {
+        "https://crm.example.com": {
+          "scopes": ["read:contacts"],
+          "authorization_details_types": ["data"]
+        }
+      }
+    },
+    {
+      "methods": ["GET"],
+      "path": "/reports/monthly",
+      "delegated_resources": {
+        "https://crm.example.com": {
+          "authorization_target": "https://reports.example.com",
+          "scopes": ["read:reports"]
+        }
+      }
+    }
+  ]
 }
-</pre><a href="#section-5.2-2" class="pilcrow">¶</a>
-</div>
-<p id="section-5.2-3">In this example, the delegated party (<code>https://analytics.example.com</code>) indicates that to serve its delegated resources, it needs access to the CRM resource server (<code>https://crm.example.com</code>) with the <code>read:contacts</code> and <code>read:reports</code> scopes, and supports <code>data</code>-type authorization details as defined in <span>[<a href="#RFC9396" class="cite xref">RFC9396</a>]</span>.<a href="#section-5.2-3" class="pilcrow">¶</a></p>
-<p id="section-5.2-4">The client uses this information to:<a href="#section-5.2-4" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-5.2-5">
-<li id="section-5.2-5.1">
-            <p id="section-5.2-5.1.1">Request a delegation token from the authorization server with appropriate permissions (see Section 7).<a href="#section-5.2-5.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-5.2-5.2">
-            <p id="section-5.2-5.2.1">Create delegated access tokens with the correct permissions, audience, and target resource identifiers (see Section 8).<a href="#section-5.2-5.2.1" class="pilcrow">¶</a></p>
-</li>
-        </ol>
-</section>
-</div>
-<div id="www-authenticate">
-<section id="section-5.3">
-        <h3 id="name-www-authenticate">
-<a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-www-authenticate" class="section-name selfRef">WWW-Authenticate</a>
-        </h3>
-<p id="section-5.3-1">As defined in <span>[<a href="#RFC9728" class="cite xref">RFC9728</a>]</span>, upon receipt of a request for a delegated resource that lacks credentials, the delegated party can reply with a challenge using the 401 (Unauthorized) status code (<span>[<a href="#RFC9110" class="cite xref">RFC9110</a>]</span> Section 15.5.2) and the <code>WWW-Authenticate</code> header field (<span>[<a href="#RFC9110" class="cite xref">RFC9110</a>]</span> Section 11.6.1), including the <code>resource_metadata</code> parameter with the URL of its protected resource metadata:<a href="#section-5.3-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-5.3-2">
-<pre>
-HTTP/1.1 401 Unauthorized
-WWW-Authenticate: Bearer resource_metadata=\
-  "https://dp.example.com/.well-known/oauth-protected-resource"
 </pre><a href="#section-5.3-2" class="pilcrow">¶</a>
 </div>
+<p id="section-5.3-3">In this example the resource server (<code>https://analytics.example.com</code>) indicates that it supports its own <code>analytics:summary</code> scope and that it may need access to the CRM resource server (<code>https://crm.example.com</code>) with the <code>read:contacts</code> and <code>read:reports</code> scopes. The <code>authorization_requirements</code> field further indicates that <code>GET /summary</code> requires the local <code>analytics:summary</code> scope, <code>GET /reports/contacts</code> requires a delegated access token that covers the CRM <code>read:contacts</code> scope and <code>data</code>-type authorization details, and <code>GET /reports/monthly</code> requires a delegated access token presented to CRM that covers the <code>read:reports</code> scope at <code>https://reports.example.com</code>.<a href="#section-5.3-3" class="pilcrow">¶</a></p>
+<p id="section-5.3-4">The client uses this information, and optionally the metadata of downstream intermediary resource servers, to:<a href="#section-5.3-4" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-5.3-5">
+<li id="section-5.3-5.1">
+            <p id="section-5.3-5.1.1">Request a delegation token from the authorization server with appropriate permissions (see Section 7).<a href="#section-5.3-5.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-5.3-5.2">
+            <p id="section-5.3-5.2.1">Create delegated access tokens with the correct permissions, audience, and downstream resource identifiers (see Section 8).<a href="#section-5.3-5.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
 </section>
 </div>
 </section>
@@ -1653,7 +1751,7 @@ WWW-Authenticate: Bearer resource_metadata=\
 </dd>
           <dd class="break"></dd>
 </dl>
-<p id="section-6.1.1-3">Subordinate delegation tokens and delegated access tokens <span class="bcp14">MUST NOT</span> include the <code>iss</code>, <code>sub</code>, or <code>jti</code> claims. Verifiers (resource servers and delegated parties) <span class="bcp14">SHALL</span> consider these claims from the top-level delegation token when validating the entire token chain.<a href="#section-6.1.1-3" class="pilcrow">¶</a></p>
+<p id="section-6.1.1-3">Subordinate delegation tokens and delegated access tokens <span class="bcp14">MUST NOT</span> include the <code>iss</code>, <code>sub</code>, or <code>jti</code> claims. Verifiers (resource servers) <span class="bcp14">SHALL</span> consider these claims from the top-level delegation token when validating the entire token chain.<a href="#section-6.1.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1725,7 +1823,7 @@ WWW-Authenticate: Bearer resource_metadata=\
       </ol>
 <p id="section-8-3">The client <span class="bcp14">MUST</span> include the delegation token in the <code>delegation_token</code> attribute of the delegated access token.<a href="#section-8-3" class="pilcrow">¶</a></p>
 <p id="section-8-4">The client <span class="bcp14">MUST</span> ensure that the delegated access token's scope, lifetime, audience, and other claims do not exceed those of the delegation token. The client <span class="bcp14">MAY</span> generate single-use delegated access tokens that the resource server or authorization server only consider valid when validating it for the first time.<a href="#section-8-4" class="pilcrow">¶</a></p>
-<p id="section-8-5">The client is <span class="bcp14">RECOMMENDED</span> to "sender-constrain" the delegated access tokens by binding the delegated access tokens with public keys or certificates where the corresponding private keys are owned by the delegated parties, via techniques similar to OAuth 2.0 mTLS <span>[<a href="#RFC8705" class="cite xref">RFC8705</a>]</span> or OAuth 2.0 DPoP <span>[<a href="#RFC9449" class="cite xref">RFC9449</a>]</span>.<a href="#section-8-5" class="pilcrow">¶</a></p>
+<p id="section-8-5">The client is <span class="bcp14">RECOMMENDED</span> to "sender-constrain" the delegated access tokens by binding the delegated access tokens with public keys or certificates where the corresponding private keys are held by the resource servers that will present those tokens, via techniques similar to OAuth 2.0 mTLS <span>[<a href="#RFC8705" class="cite xref">RFC8705</a>]</span> or OAuth 2.0 DPoP <span>[<a href="#RFC9449" class="cite xref">RFC9449</a>]</span>.<a href="#section-8-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="using-delegated-access-tokens">
@@ -1733,17 +1831,17 @@ WWW-Authenticate: Bearer resource_metadata=\
       <h2 id="name-using-delegated-access-toke">
 <a href="#section-9" class="section-number selfRef">9. </a><a href="#name-using-delegated-access-toke" class="section-name selfRef">Using Delegated Access Tokens</a>
       </h2>
-<p id="section-9-1">When the client accesses a delegated resource on the delegated party, the client <span class="bcp14">MUST</span> include the delegated access token as a bearer token <span>[<a href="#RFC6750" class="cite xref">RFC6750</a>]</span> in the <code>Delegated-Authorization</code> header, used by the target resource server to verify requests from the delegated party. The <code>Delegated-Authorization</code> header <span class="bcp14">MAY</span> be used in combination with an <code>Authorization</code> header used by the delegated party to verify the request from the client.<a href="#section-9-1" class="pilcrow">¶</a></p>
+<p id="section-9-1">When the client accesses an intermediary resource server endpoint that requires downstream access, the client <span class="bcp14">MUST</span> include the delegated access token as a bearer token <span>[<a href="#RFC6750" class="cite xref">RFC6750</a>]</span> in the <code>Delegated-Authorization</code> header. The delegated access token is used by downstream resource servers to verify requests from upstream intermediary resource servers. The <code>Delegated-Authorization</code> header <span class="bcp14">MAY</span> be used in combination with an <code>Authorization</code> header used by the intermediary resource server to verify the request from the client.<a href="#section-9-1" class="pilcrow">¶</a></p>
 <p id="section-9-2">For example:<a href="#section-9-2" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-9-3">
 <pre>
 GET /dp-resource HTTP/1.1
-Host: delegated-party.example.com
+Host: analytics.example.com
 Authorization: Bearer mF_9.B5g1234
 Delegated-Authorization: Bearer mF_9.B5f-4.1JqM
 </pre><a href="#section-9-3" class="pilcrow">¶</a>
 </div>
-<p id="section-9-4">Upon receiving a delegated resource request with a <code>Delegated-Authorization</code> header, the delegated party sends a request to the target resource server for the respective target resource. The delegated party <span class="bcp14">MUST</span> include the received delegated access token as a bearer token in the <code>Authorization</code> header.<a href="#section-9-4" class="pilcrow">¶</a></p>
+<p id="section-9-4">Upon receiving a request with a <code>Delegated-Authorization</code> header, the intermediary resource server can send downstream requests to one or more resource servers for the respective protected resources. For each such downstream request, the invoked resource server is the target resource server for that hop and can itself act as an intermediary resource server for subsequent downstream requests. The intermediary resource server <span class="bcp14">MUST</span> include the received delegated access token as a bearer token in the <code>Authorization</code> header.<a href="#section-9-4" class="pilcrow">¶</a></p>
 <p id="section-9-5">For example:<a href="#section-9-5" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-9-6">
 <pre>
@@ -1809,10 +1907,10 @@ Authorization: Bearer mF_9.B5f-4.1JqM
 <p id="section-11.1-1">When a client creates delegated access tokens locally using a delegation token, the authorization server only observes the initial delegation token request. After that, the client can independently issue subordinate tokens without further authorization server interaction. This provides the following privacy benefits:<a href="#section-11.1-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-11.1-2.1">
-            <p id="section-11.1-2.1.1"><strong>Minimized Authorization Server Visibility</strong>: The authorization server does not learn which delegated parties are authorized, what resources they access, or when they access them.<a href="#section-11.1-2.1.1" class="pilcrow">¶</a></p>
+            <p id="section-11.1-2.1.1"><strong>Minimized Authorization Server Visibility</strong>: The authorization server does not learn which intermediary resource servers are authorized to access downstream resource servers, what resources they access, or when they access them.<a href="#section-11.1-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-11.1-2.2">
-            <p id="section-11.1-2.2.1"><strong>No Access Pattern Correlation</strong>: The authorization server cannot track usage patterns or correlate activities across different delegated parties.<a href="#section-11.1-2.2.1" class="pilcrow">¶</a></p>
+            <p id="section-11.1-2.2.1"><strong>No Access Pattern Correlation</strong>: The authorization server cannot track usage patterns or correlate activities across different resource servers.<a href="#section-11.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-11.1-2.3">
             <p id="section-11.1-2.3.1"><strong>Reduced Data Collection</strong>: The authorization server stores only metadata about the initial delegation token, not about each delegated access token.<a href="#section-11.1-2.3.1" class="pilcrow">¶</a></p>
@@ -1869,10 +1967,10 @@ Authorization: Bearer mF_9.B5f-4.1JqM
           <p id="section-12-2.3.1">Delegated access tokens <span class="bcp14">SHOULD</span> have short lifetimes and be bound to specific audiences, methods, and sender keys (e.g., via DPoP or mTLS) to mitigate replay and token leakage risks. Resource servers <span class="bcp14">MUST</span> validate both the delegation token and the delegated access token, ensuring the latter does not exceed the former’s permissions.<a href="#section-12-2.3.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-12-2.4">
-          <p id="section-12-2.4.1">Token introspection CAN be used in scenarios where the tokens are kept opaque from the delegated party and the resource server. If employed, token introspection responses <span class="bcp14">MUST NOT</span> reveal sensitive internal information. Authorization servers <span class="bcp14">SHOULD</span> enforce rate limiting and audit token issuance and validation activities.<a href="#section-12-2.4.1" class="pilcrow">¶</a></p>
+          <p id="section-12-2.4.1">Token introspection CAN be used in scenarios where the tokens are kept opaque from the resource servers. If employed, token introspection responses <span class="bcp14">MUST NOT</span> reveal sensitive internal information. Authorization servers <span class="bcp14">SHOULD</span> enforce rate limiting and audit token issuance and validation activities.<a href="#section-12-2.4.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-12-2.5">
-          <p id="section-12-2.5.1">Protected resource metadata published by delegated parties is self-declared. Clients and authorization servers <span class="bcp14">SHOULD</span> verify that delegated access tokens remain within the intended scope of delegation. Clients <span class="bcp14">SHOULD</span> not trust <code>delegated_resources</code> metadata from untrusted delegated parties without independent verification of the delegated party's identity and authorization requirements.<a href="#section-12-2.5.1" class="pilcrow">¶</a></p>
+          <p id="section-12-2.5.1">Protected resource metadata published by resource servers is self-declared. Clients and authorization servers <span class="bcp14">SHOULD</span> verify that delegated access tokens remain within the intended scope of delegation. Clients <span class="bcp14">SHOULD</span> not trust <code>delegated_resources</code> or <code>authorization_requirements</code> metadata from untrusted resource servers without independent verification of the resource server's identity and authorization requirements.<a href="#section-12-2.5.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
@@ -1891,10 +1989,10 @@ Authorization: Bearer mF_9.B5f-4.1JqM
           <p id="section-13-2.2.1"><strong>Token Lifetimes</strong>: Delegation tokens <span class="bcp14">SHOULD</span> have longer lifetimes than delegated access tokens to reduce authorization server load, and <span class="bcp14">SHOULD</span> be refreshable using refresh tokens.<a href="#section-13-2.2.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-13-2.3">
-          <p id="section-13-2.3.1"><strong>Metadata Caching</strong>: Protected resource metadata published by delegated parties at <code>/.well-known/oauth-protected-resource</code> can be cached by clients; a reasonable default TTL (e.g., 24 hours) is <span class="bcp14">RECOMMENDED</span>.<a href="#section-13-2.3.1" class="pilcrow">¶</a></p>
+          <p id="section-13-2.3.1"><strong>Metadata Caching</strong>: Protected resource metadata published by resource servers at <code>/.well-known/oauth-protected-resource</code> can be cached by clients; a reasonable default TTL (e.g., 24 hours) is <span class="bcp14">RECOMMENDED</span>.<a href="#section-13-2.3.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-13-2.4">
-          <p id="section-13-2.4.1"><strong>Error Handling</strong>: Delegated parties and resource servers <span class="bcp14">SHOULD</span> provide clear error responses (e.g., invalid token, insufficient scope) without exposing implementation details.<a href="#section-13-2.4.1" class="pilcrow">¶</a></p>
+          <p id="section-13-2.4.1"><strong>Error Handling</strong>: Resource servers <span class="bcp14">SHOULD</span> provide clear error responses (e.g., invalid token, insufficient scope) without exposing implementation details.<a href="#section-13-2.4.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-13-2.5">
           <p id="section-13-2.5.1"><strong>Interoperability</strong>: Implementers <span class="bcp14">SHOULD</span> ensure compatibility with existing OAuth 2.0 features such as PKCE, Rich Authorization Requests, and sender-constrained tokens.<a href="#section-13-2.5.1" class="pilcrow">¶</a></p>
@@ -2003,13 +2101,25 @@ Authorization: Bearer mF_9.B5f-4.1JqM
             <p id="section-14.4-2.1.1"><strong>Metadata Name</strong>: delegated_resources<a href="#section-14.4-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-14.4-2.2">
-            <p id="section-14.4-2.2.1"><strong>Metadata Description</strong>: JSON object mapping target protected resource identifiers to the authorization requirements for each. Each target resource value contains <code>scopes_supported</code> and/or <code>authorization_details_types_supported</code> fields as defined in <span>[<a href="#RFC9728" class="cite xref">RFC9728</a>]</span>, indicating the permissions needed at that target resource server.<a href="#section-14.4-2.2.1" class="pilcrow">¶</a></p>
+            <p id="section-14.4-2.2.1"><strong>Metadata Description</strong>: JSON object mapping downstream protected resource identifiers to the authorization capabilities for each. Each downstream resource value contains <code>authorization_target</code> and either <code>scopes_supported</code> or <code>authorization_details_types_supported</code>, indicating permissions that may be needed at that authorization target.<a href="#section-14.4-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-14.4-2.3">
             <p id="section-14.4-2.3.1"><strong>Change Controller</strong>: IETF<a href="#section-14.4-2.3.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-14.4-2.4">
             <p id="section-14.4-2.4.1"><strong>Specification Document(s)</strong>: [this document]<a href="#section-14.4-2.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-14.4-2.5">
+            <p id="section-14.4-2.5.1"><strong>Metadata Name</strong>: authorization_requirements<a href="#section-14.4-2.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-14.4-2.6">
+            <p id="section-14.4-2.6.1"><strong>Metadata Description</strong>: JSON array describing authorization requirements for specific endpoints or operations of the protected resource. Each entry can identify local requirements using <code>scopes</code>, <code>authorization_details_types</code>, or <code>authorization_details</code>, and can identify downstream delegated requirements using <code>delegated_resources</code>. Within <code>delegated_resources</code>, <code>authorization_target</code> distinguishes the protected resource to which the listed permissions apply.<a href="#section-14.4-2.6.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-14.4-2.7">
+            <p id="section-14.4-2.7.1"><strong>Change Controller</strong>: IETF<a href="#section-14.4-2.7.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-14.4-2.8">
+            <p id="section-14.4-2.8.1"><strong>Specification Document(s)</strong>: [this document]<a href="#section-14.4-2.8.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
@@ -2325,7 +2435,7 @@ Authorization: Bearer mF_9.B5f-4.1JqM
               <td class="text-left" rowspan="1" colspan="1">agent's client application</td>
             </tr>
             <tr>
-              <td class="text-left" rowspan="1" colspan="1">Delegated Party</td>
+              <td class="text-left" rowspan="1" colspan="1">Intermediary Resource Server</td>
               <td class="text-left" rowspan="1" colspan="1">CI-CD agent, test agent, DEV agent, research agent</td>
             </tr>
             <tr>
@@ -2333,11 +2443,11 @@ Authorization: Bearer mF_9.B5f-4.1JqM
               <td class="text-left" rowspan="1" colspan="1">enterprise IAM system</td>
             </tr>
             <tr>
-              <td class="text-left" rowspan="1" colspan="1">Resource Server</td>
+              <td class="text-left" rowspan="1" colspan="1">Downstream / Target Resource Server(s)</td>
               <td class="text-left" rowspan="1" colspan="1">enterprise IT systems</td>
             </tr>
             <tr>
-              <td class="text-left" rowspan="1" colspan="1">Target Protected Resource</td>
+              <td class="text-left" rowspan="1" colspan="1">Downstream / Target Protected Resource(s)</td>
               <td class="text-left" rowspan="1" colspan="1">DEV/STAGE/PROD environments, internal knowledge database</td>
             </tr>
           </tbody>
@@ -2372,7 +2482,7 @@ Authorization: Bearer mF_9.B5f-4.1JqM
               <td class="text-left" rowspan="1" colspan="1">SaaS CRM application</td>
             </tr>
             <tr>
-              <td class="text-left" rowspan="1" colspan="1">Delegated Party</td>
+              <td class="text-left" rowspan="1" colspan="1">Intermediary Resource Server</td>
               <td class="text-left" rowspan="1" colspan="1">analytics service</td>
             </tr>
             <tr>
@@ -2380,11 +2490,11 @@ Authorization: Bearer mF_9.B5f-4.1JqM
               <td class="text-left" rowspan="1" colspan="1">enterprise IdP</td>
             </tr>
             <tr>
-              <td class="text-left" rowspan="1" colspan="1">Resource Server</td>
+              <td class="text-left" rowspan="1" colspan="1">Downstream / Target Resource Server(s)</td>
               <td class="text-left" rowspan="1" colspan="1">CRM application server</td>
             </tr>
             <tr>
-              <td class="text-left" rowspan="1" colspan="1">Target Protected Resource</td>
+              <td class="text-left" rowspan="1" colspan="1">Downstream / Target Protected Resource(s)</td>
               <td class="text-left" rowspan="1" colspan="1">CRM application's data retrieval API</td>
             </tr>
           </tbody>

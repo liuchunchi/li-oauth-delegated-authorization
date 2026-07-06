@@ -20,7 +20,7 @@ Abstract
    Delegated authorization enables a client to delegate a subset of its
    granted privileges to a subordinate access token (also known as a
    delegated access token).  This mechanism allows the client to
-   securely delegate authorization to a delegated party while
+   securely delegate authorization to another application while
    maintaining fine-grained control over delegated permissions.
 
 About This Document
@@ -79,9 +79,9 @@ Table of Contents
    3.  Terminology
    4.  Overview
    5.  Protected Resource Metadata Discovery
-     5.1.  Delegated Resources
-     5.2.  Metadata Example
-     5.3.  WWW-Authenticate
+     5.1.  The delegated_resources Metadata Field
+     5.2.  The authorization_requirements Metadata Field
+     5.3.  Metadata Example
    6.  Delegation Tokens and Delegated Access Tokens
      6.1.  Delegation Tokens
        6.1.1.  Top Level Delegation Token
@@ -147,17 +147,31 @@ Table of Contents
 
    This specification uses the following terms defined in OAuth 2.0
    [RFC6749]: authorization server, client, resource server, and
-   resource owner.
+   resource owner.  A resource server can also act as a client when it
+   accesses one or more downstream resource servers.  This document
+   refers to such an entity as an intermediary resource server: it is
+   downstream from the client that invokes it, and acts as a client when
+   making requests to resource servers that are farther downstream in
+   the call chain.  Intermediary resource servers can be chained.
 
    The following additional terms are used throughout this document:
 
-   *Delegated Party (DP)*:  An entity (e.g., a service, component, or
-      application) authorized by the client to access protected
-      resources on behalf of the resource owner.
+   *Intermediary Resource Server*:  A resource server that receives a
+      request from a client and, to serve that request, acts as an OAuth
+      client when accessing one or more downstream resource servers.  It
+      is downstream from its caller and upstream from the resource
+      servers it invokes.  A downstream resource server can itself be an
+      intermediary resource server when it invokes another resource
+      server farther downstream in the call chain.
 
-   *Delegated Resource*:  A resource or API endpoint hosted by the
-      delegated party that requires access to the resource owner’s
-      protected data at a target resource server.
+   *Target Resource Server*:  The resource server that receives a
+      delegated access token from an upstream intermediary resource
+      server for a particular downstream request and hosts the protected
+      resource requested in that hop.  This role is relative to a
+      particular request: a target resource server for one hop can also
+      act as an intermediary resource server for a subsequent downstream
+      hop.  It is downstream from the intermediary resource servers that
+      precede it in that call chain.
 
    *Delegation Token*:  A token issued by the authorization server for
       the client that enables the client to create delegated access
@@ -226,18 +240,21 @@ Table of Contents
    4.  The authorization server authenticates the client and validates
        the authorization grant, and if valid, issues a delegation token.
 
-   5.  The client calls the delegated party's API, presenting the
-       delegated access token generated from the delegation token.  The
-       delegated access token is issued by the client using the
-       delegation key.  The delegated party requests the target
-       protected resource from the resource server and presents the
-       delegated access token.
+   5.  The client calls an intermediary resource server's API,
+       presenting the delegated access token generated from the
+       delegation token.  The delegated access token is issued by the
+       client using the delegation key.  The intermediary resource
+       server can request protected resources from one or more
+       downstream resource servers by presenting the delegated access
+       token.  A downstream resource server can itself be an
+       intermediary resource server for a subsequent downstream request.
 
-   6.  The resource server validates the delegated access token, and if
-       valid, serves the resource.  The delegated party receives the
-       resource, optionally transforms it into a service-specific
-       response (also known as delegated resource), and returns it to
-       the client.
+   6.  A target resource server for a downstream request validates the
+       delegated access token, and if valid, serves the resource.
+       Responses propagate back through the intermediary resource
+       servers, each of which can optionally transform a downstream
+       response into a service-specific response, and ultimately return
+       a response to the client.
 
    Both delegation token and delegated access token can be JSON Web
    Tokens (JWTs) [RFC7519] or CBOR Web Tokens (CWTs) [RFC8392].
@@ -245,85 +262,214 @@ Table of Contents
 5.  Protected Resource Metadata Discovery
 
    Before the client retrieves a delegation token and generates a
-   delegated access token for the delegated party, the client needs to
-   determine the permissions required by the delegated party and the
-   identity of the target resource servers.  Such information can be
-   manually configured into the client, or it can be dynamically
-   discovered using OAuth 2.0 Protected Resource Metadata [RFC9728].
+   delegated access token for an intermediary resource server, the
+   client needs to determine the permissions required by that resource
+   server for its own protected resources, the permissions required when
+   accessing downstream resource servers, and the identity of those
+   downstream resource servers.  Such information can be manually
+   configured into the client, or it can be dynamically discovered using
+   OAuth 2.0 Protected Resource Metadata [RFC9728].
 
-   The delegated party publishes its metadata at the standard well-known
-   URI as defined in [RFC9728].  The metadata describes the delegated
-   party as a protected resource and includes information about the
-   target resource servers it accesses and the authorization
-   requirements for each.
+   Each resource server publishes its metadata at the standard well-
+   known URI as defined in [RFC9728].  The metadata describes the
+   resource server as a protected resource.  A client can determine that
+   a resource server is an intermediary resource server when the
+   metadata contains the delegated_resources key.  The
+   delegated_resources metadata field identifies any downstream resource
+   servers the publishing resource server accesses and the authorization
+   capabilities for each.  If a downstream resource server is itself an
+   intermediary resource server, the client can also retrieve that
+   resource server's metadata to discover subsequent downstream
+   requirements.
 
-   The client retrieves this metadata and uses it to determine the
-   permissions to request in the authorization request to the
-   authorization server (see Section 7).
+   The authorization_requirements metadata field identifies the
+   authorization requirements for specific endpoints or operations.  A
+   client can use this field to request a delegation token and create
+   delegated access tokens with the minimum permissions needed for the
+   intended request.  Discovery of protected resource metadata,
+   including use of the WWW-Authenticate resource_metadata parameter,
+   follows [RFC9728].
 
-5.1.  Delegated Resources
+5.1.  The delegated_resources Metadata Field
 
    This specification defines a new protected resource metadata field,
-   delegated_resources, that indicates the target resource servers and
-   the authorization requirements the delegated party needs for each.
+   delegated_resources, that indicates the downstream resource servers
+   and the authorization capabilities the publishing resource server
+   needs for each.
 
-   *delegated_resources*:  JSON object mapping target protected resource
-      identifiers (as defined in [RFC9728]) to the authorization
-      requirements for each.  Each target resource value is a JSON
-      object containing the scopes_supported and/or
-      authorization_details_types_supported fields, following the
-      structure defined in [RFC9728].  The scopes_supported field lists
-      scope values [RFC6749] that the delegated party may need at the
-      target resource server.  The authorization_details_types_supported
-      field lists authorization details types (as defined in [RFC9396])
-      that the delegated party may need at the target resource server.
+   *delegated_resources*:  JSON object mapping downstream protected
+      resource identifiers (as defined in [RFC9728]) to the
+      authorization capabilities for each.  Each downstream resource
+      value is a JSON object containing the following members:
 
-5.2.  Metadata Example
+      *authorization_target*:  OPTIONAL.  String identifying the
+         protected resource to which the listed scopes_supported or
+         authorization_details_types_supported apply.  The value self
+         indicates the downstream protected resource identified by the
+         corresponding delegated_resources key.  Any other value is a
+         protected resource identifier as defined in [RFC9728].  If
+         omitted, the default value is self.
 
-   The following is a non-normative example of a delegated party
-   publishing protected resource metadata that indicates it is a
-   delegated party and describes its target resource server
-   requirements:
+      *scopes_supported*:  OPTIONAL.  JSON array of scope values
+         [RFC6749] that the publishing resource server may need at the
+         authorization_target.
+
+      *authorization_details_types_supported*:  OPTIONAL.  JSON array of
+         authorization details types [RFC9396] that the publishing
+         resource server may need at the authorization_target.
+
+   A downstream resource value MUST contain at least one of
+   scopes_supported or authorization_details_types_supported.
+
+5.2.  The authorization_requirements Metadata Field
+
+   This specification defines a new protected resource metadata field,
+   authorization_requirements, that indicates the authorization
+   requirements for specific endpoints or operations of the publishing
+   resource server.  The requirements can describe permissions needed at
+   the publishing resource server itself, permissions delegated to
+   downstream resource servers, or both.
+
+   *authorization_requirements*:  JSON array of authorization
+      requirement objects.  Each object describes one endpoint or
+      operation and the permissions required to access it.  The
+      following members are defined:
+
+      *methods*:  OPTIONAL.  JSON array of HTTP methods to which this
+         requirement applies.  If omitted, the requirement applies
+         independent of HTTP method.
+
+      *path*:  OPTIONAL.  Absolute path or path template identifying the
+         endpoint to which this requirement applies.  If omitted, the
+         requirement applies to the operation as otherwise identified by
+         the object.
+
+      *operation*:  OPTIONAL.  String identifying an application-level
+         operation to which this requirement applies.  This member is
+         intended for APIs where the authorization requirement is
+         associated with a named action rather than only with an HTTP
+         path.  The syntax and semantics of the operation identifier are
+         deployment specific.  For HTTP APIs where the method and path
+         uniquely identify the protected action, methods and path are
+         preferred.
+
+      *scopes*:  OPTIONAL.  JSON array of scope values [RFC6749]
+         required for the identified endpoint or operation at the
+         publishing resource server.
+
+      *authorization_details_types*:  OPTIONAL.  JSON array of
+         authorization details types [RFC9396] required or accepted for
+         the identified endpoint or operation at the publishing resource
+         server.
+
+      *authorization_details*:  OPTIONAL.  JSON array of authorization
+         detail objects [RFC9396] that describe the required permissions
+         for the identified endpoint or operation at the publishing
+         resource server.  This member can be used when the
+         authorization details type alone is not sufficient to describe
+         the minimum required permission.
+
+      *delegated_resources*:  OPTIONAL.  JSON object mapping downstream
+         protected resource identifiers to delegated authorization
+         requirement objects.  This member describes permissions that
+         the publishing resource server needs to receive in a delegated
+         access token in order to call the specified downstream resource
+         servers while serving the identified local endpoint or
+         operation.  Each delegated authorization requirement object MAY
+         contain authorization_target, with the same semantics as in the
+         delegated_resources metadata field, and identifies required
+         permissions using scopes, authorization_details_types, or
+         authorization_details.
+
+   A top-level authorization requirement object MUST identify an
+   endpoint or operation using path, operation, or both.  Each top-level
+   authorization requirement object MUST contain at least one of scopes,
+   authorization_details_types, authorization_details, or
+   delegated_resources.  Each delegated authorization requirement object
+   MUST contain at least one of scopes, authorization_details_types, or
+   authorization_details.  The authorization_requirements field is
+   optional.  Resource servers MAY omit it when authorization
+   requirements are dynamic, confidential, or better conveyed through an
+   authorization challenge.
+
+   When both path and operation are present, path identifies the
+   endpoint and operation further identifies the action within that
+   endpoint.
+
+   The authorization_requirements metadata is self-declared discovery
+   information.  It does not replace access control enforcement by
+   resource servers, and clients MUST NOT assume that possession of the
+   indicated permissions guarantees access to the identified endpoint or
+   operation.
+
+5.3.  Metadata Example
+
+   The following is a non-normative example of a resource server
+   publishing protected resource metadata that describes both its
+   downstream resource server capabilities and endpoint-specific
+   authorization requirements:
 
    {
      "resource": "https://analytics.example.com",
-     "scopes_supported": ["openid"],
+     "scopes_supported": ["openid", "analytics:summary"],
      "authorization_servers": ["https://idp.example.com"],
 
      "delegated_resources": {
        "https://crm.example.com": {
+         "authorization_target": "self",
          "scopes_supported": ["read:contacts", "read:reports"],
          "authorization_details_types_supported": ["data"]
        }
-     }
+     },
+
+     "authorization_requirements": [
+       {
+         "methods": ["GET"],
+         "path": "/summary",
+         "scopes": ["analytics:summary"]
+       },
+       {
+         "methods": ["GET"],
+         "path": "/reports/contacts",
+         "delegated_resources": {
+           "https://crm.example.com": {
+             "scopes": ["read:contacts"],
+             "authorization_details_types": ["data"]
+           }
+         }
+       },
+       {
+         "methods": ["GET"],
+         "path": "/reports/monthly",
+         "delegated_resources": {
+           "https://crm.example.com": {
+             "authorization_target": "https://reports.example.com",
+             "scopes": ["read:reports"]
+           }
+         }
+       }
+     ]
    }
 
-   In this example, the delegated party (https://analytics.example.com)
-   indicates that to serve its delegated resources, it needs access to
-   the CRM resource server (https://crm.example.com) with the
-   read:contacts and read:reports scopes, and supports data-type
-   authorization details as defined in [RFC9396].
+   In this example the resource server (https://analytics.example.com)
+   indicates that it supports its own analytics:summary scope and that
+   it may need access to the CRM resource server
+   (https://crm.example.com) with the read:contacts and read:reports
+   scopes.  The authorization_requirements field further indicates that
+   GET /summary requires the local analytics:summary scope, GET
+   /reports/contacts requires a delegated access token that covers the
+   CRM read:contacts scope and data-type authorization details, and GET
+   /reports/monthly requires a delegated access token presented to CRM
+   that covers the read:reports scope at https://reports.example.com.
 
-   The client uses this information to:
+   The client uses this information, and optionally the metadata of
+   downstream intermediary resource servers, to:
 
    1.  Request a delegation token from the authorization server with
        appropriate permissions (see Section 7).
 
    2.  Create delegated access tokens with the correct permissions,
-       audience, and target resource identifiers (see Section 8).
-
-5.3.  WWW-Authenticate
-
-   As defined in [RFC9728], upon receipt of a request for a delegated
-   resource that lacks credentials, the delegated party can reply with a
-   challenge using the 401 (Unauthorized) status code ([RFC9110]
-   Section 15.5.2) and the WWW-Authenticate header field ([RFC9110]
-   Section 11.6.1), including the resource_metadata parameter with the
-   URL of its protected resource metadata:
-
-   HTTP/1.1 401 Unauthorized
-   WWW-Authenticate: Bearer resource_metadata=\
-     "https://dp.example.com/.well-known/oauth-protected-resource"
+       audience, and downstream resource identifiers (see Section 8).
 
 6.  Delegation Tokens and Delegated Access Tokens
 
@@ -409,9 +555,9 @@ Table of Contents
       applies to all subordinate tokens in the chain.
 
    Subordinate delegation tokens and delegated access tokens MUST NOT
-   include the iss, sub, or jti claims.  Verifiers (resource servers and
-   delegated parties) SHALL consider these claims from the top-level
-   delegation token when validating the entire token chain.
+   include the iss, sub, or jti claims.  Verifiers (resource servers)
+   SHALL consider these claims from the top-level delegation token when
+   validating the entire token chain.
 
 6.2.  Delegated Access Tokens
 
@@ -496,32 +642,36 @@ Table of Contents
 
    The client is RECOMMENDED to "sender-constrain" the delegated access
    tokens by binding the delegated access tokens with public keys or
-   certificates where the corresponding private keys are owned by the
-   delegated parties, via techniques similar to OAuth 2.0 mTLS [RFC8705]
-   or OAuth 2.0 DPoP [RFC9449].
+   certificates where the corresponding private keys are held by the
+   resource servers that will present those tokens, via techniques
+   similar to OAuth 2.0 mTLS [RFC8705] or OAuth 2.0 DPoP [RFC9449].
 
 9.  Using Delegated Access Tokens
 
-   When the client accesses a delegated resource on the delegated party,
-   the client MUST include the delegated access token as a bearer token
-   [RFC6750] in the Delegated-Authorization header, used by the target
-   resource server to verify requests from the delegated party.  The
-   Delegated-Authorization header MAY be used in combination with an
-   Authorization header used by the delegated party to verify the
-   request from the client.
+   When the client accesses an intermediary resource server endpoint
+   that requires downstream access, the client MUST include the
+   delegated access token as a bearer token [RFC6750] in the Delegated-
+   Authorization header.  The delegated access token is used by
+   downstream resource servers to verify requests from upstream
+   intermediary resource servers.  The Delegated-Authorization header
+   MAY be used in combination with an Authorization header used by the
+   intermediary resource server to verify the request from the client.
 
    For example:
 
    GET /dp-resource HTTP/1.1
-   Host: delegated-party.example.com
+   Host: analytics.example.com
    Authorization: Bearer mF_9.B5g1234
    Delegated-Authorization: Bearer mF_9.B5f-4.1JqM
 
-   Upon receiving a delegated resource request with a Delegated-
-   Authorization header, the delegated party sends a request to the
-   target resource server for the respective target resource.  The
-   delegated party MUST include the received delegated access token as a
-   bearer token in the Authorization header.
+   Upon receiving a request with a Delegated-Authorization header, the
+   intermediary resource server can send downstream requests to one or
+   more resource servers for the respective protected resources.  For
+   each such downstream request, the invoked resource server is the
+   target resource server for that hop and can itself act as an
+   intermediary resource server for subsequent downstream requests.  The
+   intermediary resource server MUST include the received delegated
+   access token as a bearer token in the Authorization header.
 
    For example:
 
@@ -578,12 +728,13 @@ Table of Contents
    interaction.  This provides the following privacy benefits:
 
    *  *Minimized Authorization Server Visibility*: The authorization
-      server does not learn which delegated parties are authorized, what
-      resources they access, or when they access them.
+      server does not learn which intermediary resource servers are
+      authorized to access downstream resource servers, what resources
+      they access, or when they access them.
 
    *  *No Access Pattern Correlation*: The authorization server cannot
       track usage patterns or correlate activities across different
-      delegated parties.
+      resource servers.
 
    *  *Reduced Data Collection*: The authorization server stores only
       metadata about the initial delegation token, not about each
@@ -643,17 +794,18 @@ Table of Contents
       permissions.
 
    *  Token introspection CAN be used in scenarios where the tokens are
-      kept opaque from the delegated party and the resource server.  If
-      employed, token introspection responses MUST NOT reveal sensitive
-      internal information.  Authorization servers SHOULD enforce rate
-      limiting and audit token issuance and validation activities.
+      kept opaque from the resource servers.  If employed, token
+      introspection responses MUST NOT reveal sensitive internal
+      information.  Authorization servers SHOULD enforce rate limiting
+      and audit token issuance and validation activities.
 
-   *  Protected resource metadata published by delegated parties is
-      self-declared.  Clients and authorization servers SHOULD verify
-      that delegated access tokens remain within the intended scope of
-      delegation.  Clients SHOULD not trust delegated_resources metadata
-      from untrusted delegated parties without independent verification
-      of the delegated party's identity and authorization requirements.
+   *  Protected resource metadata published by resource servers is self-
+      declared.  Clients and authorization servers SHOULD verify that
+      delegated access tokens remain within the intended scope of
+      delegation.  Clients SHOULD not trust delegated_resources or
+      authorization_requirements metadata from untrusted resource
+      servers without independent verification of the resource server's
+      identity and authorization requirements.
 
 13.  Operational Considerations
 
@@ -670,13 +822,13 @@ Table of Contents
       and SHOULD be refreshable using refresh tokens.
 
    *  *Metadata Caching*: Protected resource metadata published by
-      delegated parties at /.well-known/oauth-protected-resource can be
+      resource servers at /.well-known/oauth-protected-resource can be
       cached by clients; a reasonable default TTL (e.g., 24 hours) is
       RECOMMENDED.
 
-   *  *Error Handling*: Delegated parties and resource servers SHOULD
-      provide clear error responses (e.g., invalid token, insufficient
-      scope) without exposing implementation details.
+   *  *Error Handling*: Resource servers SHOULD provide clear error
+      responses (e.g., invalid token, insufficient scope) without
+      exposing implementation details.
 
    *  *Interoperability*: Implementers SHOULD ensure compatibility with
       existing OAuth 2.0 features such as PKCE, Rich Authorization
@@ -744,12 +896,27 @@ Table of Contents
 
    *  *Metadata Name*: delegated_resources
 
-   *  *Metadata Description*: JSON object mapping target protected
-      resource identifiers to the authorization requirements for each.
-      Each target resource value contains scopes_supported and/or
-      authorization_details_types_supported fields as defined in
-      [RFC9728], indicating the permissions needed at that target
-      resource server.
+   *  *Metadata Description*: JSON object mapping downstream protected
+      resource identifiers to the authorization capabilities for each.
+      Each downstream resource value contains authorization_target and
+      either scopes_supported or authorization_details_types_supported,
+      indicating permissions that may be needed at that authorization
+      target.
+
+   *  *Change Controller*: IETF
+
+   *  *Specification Document(s)*: [this document]
+
+   *  *Metadata Name*: authorization_requirements
+
+   *  *Metadata Description*: JSON array describing authorization
+      requirements for specific endpoints or operations of the protected
+      resource.  Each entry can identify local requirements using
+      scopes, authorization_details_types, or authorization_details, and
+      can identify downstream delegated requirements using
+      delegated_resources.  Within delegated_resources,
+      authorization_target distinguishes the protected resource to which
+      the listed permissions apply.
 
    *  *Change Controller*: IETF
 
@@ -1043,26 +1210,27 @@ C.1.  Delegating Subset of Access Rights to Specialized AI Agents
    specific service/API/database/codebase according to its specialty and
    dedicated workflow.
 
-     +==================+===========================================+
-     | Role             | Service / Component                       |
-     +==================+===========================================+
-     | Resource Owner   | an enterprise, individual or a department |
-     +------------------+-------------------------------------------+
-     | Client           | agent's client application                |
-     +------------------+-------------------------------------------+
-     | Delegated Party  | CI-CD agent, test agent, DEV agent,       |
-     |                  | research agent                            |
-     +------------------+-------------------------------------------+
-     | Authorization    | enterprise IAM system                     |
-     | Server           |                                           |
-     +------------------+-------------------------------------------+
-     | Resource Server  | enterprise IT systems                     |
-     +------------------+-------------------------------------------+
-     | Target Protected | DEV/STAGE/PROD environments, internal     |
-     | Resource         | knowledge database                        |
-     +------------------+-------------------------------------------+
+   +=======================+===========================================+
+   | Role                  | Service / Component                       |
+   +=======================+===========================================+
+   | Resource Owner        | an enterprise, individual or              |
+   |                       | a department                              |
+   +-----------------------+-------------------------------------------+
+   | Client                | agent's client application                |
+   +-----------------------+-------------------------------------------+
+   | Intermediary Resource | CI-CD agent, test agent, DEV              |
+   | Server                | agent, research agent                     |
+   +-----------------------+-------------------------------------------+
+   | Authorization Server  | enterprise IAM system                     |
+   +-----------------------+-------------------------------------------+
+   | Downstream / Target   | enterprise IT systems                     |
+   | Resource Server(s)    |                                           |
+   +-----------------------+-------------------------------------------+
+   | Downstream / Target   | DEV/STAGE/PROD environments,              |
+   | Protected Resource(s) | internal knowledge database               |
+   +-----------------------+-------------------------------------------+
 
-                            Table 1: AI Agents
+                             Table 1: AI Agents
 
 C.2.  Third-Party Analytics Platform Integrated in an Enterprise SaaS
 
@@ -1080,23 +1248,24 @@ C.2.  Third-Party Analytics Platform Integrated in an Enterprise SaaS
    aggregated business intelligence report, and delivers it back to the
    CRM application for the corporate customer to view.
 
-   +===========================+======================================+
-   | Role                      | Service / Component                  |
-   +===========================+======================================+
-   | Resource Owner            | company A (the tenant)               |
-   +---------------------------+--------------------------------------+
-   | Client                    | SaaS CRM application                 |
-   +---------------------------+--------------------------------------+
-   | Delegated Party           | analytics service                    |
-   +---------------------------+--------------------------------------+
-   | Authorization Server      | enterprise IdP                       |
-   +---------------------------+--------------------------------------+
-   | Resource Server           | CRM application server               |
-   +---------------------------+--------------------------------------+
-   | Target Protected Resource | CRM application's data retrieval API |
-   +---------------------------+--------------------------------------+
+    +========================================+========================+
+    | Role                                   | Service / Component    |
+    +========================================+========================+
+    | Resource Owner                         | company A (the tenant) |
+    +----------------------------------------+------------------------+
+    | Client                                 | SaaS CRM application   |
+    +----------------------------------------+------------------------+
+    | Intermediary Resource Server           | analytics service      |
+    +----------------------------------------+------------------------+
+    | Authorization Server                   | enterprise IdP         |
+    +----------------------------------------+------------------------+
+    | Downstream / Target Resource Server(s) | CRM application server |
+    +----------------------------------------+------------------------+
+    | Downstream / Target Protected          | CRM application's data |
+    | Resource(s)                            | retrieval API          |
+    +----------------------------------------+------------------------+
 
-                         Table 2: Enterprise-SaaS
+                          Table 2: Enterprise-SaaS
 
 Authors' Addresses
 
