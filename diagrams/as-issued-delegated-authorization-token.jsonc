@@ -1,0 +1,22 @@
+{
+  "protected": {
+    "typ": "da+jwt",
+    "alg": "ES256",
+    "kid": "as-key-2026-01"
+  },
+  "payload": {
+    "iss": "https://as.example.com",
+    "sub": "user-1234",
+    "aud": ["https://api.example.com"],
+    "iat": 1784000000,
+    "nbf": 1784000000,
+    "exp": 1784003600,
+    "jti": "root-7F3A",
+    "scope": "records:read records:write",
+    "max_delegation_depth": 2,
+    "cnf": {
+      "jkt": "l8xQwCzP2N6pG9kR4mV7sH1bD5fJ0aY3uE6iT9oA2cM"
+    }
+  },
+  "signature": "<authorization-server-signature>"
+}

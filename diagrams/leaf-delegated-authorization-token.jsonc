@@ -1,0 +1,22 @@
+{
+  "protected": {
+    "typ": "da+jwt",
+    "alg": "ES256",
+    "jwk": {
+      "kty": "EC",
+      "crv": "P-256",
+      "x": "<client-b-public-x>",
+      "y": "<client-b-public-y>"
+    }
+  },
+  "payload": {
+    "aud": ["https://api.example.com"],
+    "exp": 1784000900,
+    "scope": "records:read",
+    "max_delegation_depth": 0,
+    "cnf": {
+      "jkt": "w5T1gM9rA3kX7pL2dV8nC4sH0qB6yF1uJ9iE5oZ2cRk"
+    }
+  },
+  "signature": "<client-b-signature>"
+}

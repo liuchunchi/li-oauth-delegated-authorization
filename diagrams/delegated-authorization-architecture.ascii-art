@@ -1,40 +1,22 @@
-           +-----------+ 1. Authorization     +---------------+
-           |           |      Request         |               |
-           |           +---------------------->               |
-           |           |                      |   Resource    |
-           |           | 2. Authorization     |     Owner     |
-           |           |      Grant           |               |
-           |           <----------------------+               |
-           |           |                      +---------------+
-           |  Client   |                                       
-           |           | 3. Authorization     +---------------+
-           |           |      Grant           |               |
-           |           +---------------------->               |
-           |           |                      | Authorization |
-           |           | 4. Delegation        |     Server    |
-           |           |      Token           |               |
-           |           <----------------------+               |
-           +--^-----+--+                      +---------------+
-              |     |5. Delegated                              
-6. Delegated  |     |     Access                               
-      Resource|     |     Token                                
-              |     |                                          
-       +------+-----v-----+ 5. Delegated       +---------------+
-       |                  |      Access Token  |               |
-       |  Intermediary    +------------------->| Downstream /  |
-       | Resource Server  |                    |    Target     |
-       |                  | 6. Target          |   Resource    |
-       |                  |    Protected       |    Server(s)  |
-       |                  |    Resource        |               |
-       |                  <--------------------+               |
-       +------------------+                    +-------+-------+
-                                                       |
-                                                       | Optional subsequent
-                                                       | downstream request
-                                                       v
-                                               +---------------+
-                                               | Downstream /  |
-                                               |    Target     |
-                                               |   Resource    |
-                                               |    Server     |
-                                               +---------------+
++---------------+   OAuth grant and DPoP   +-------------------+
+| Authorization |<------------------------>|     Client A      |
+|    Server     |     AS-Issued Token      | Delegating Client |
++---------------+    (cnf = key A)         +---------+---------+
+                                                     |
+                                             signs child token
+                                             (cnf = key B)
+                                                     |
+                                                     v
+                                           +-------------------+
+                                           |     Client B      |
+                                           |  Delegate Client  |
+                                           +---------+---------+
+                                                     |
+                                        Authorization: DA token chain
+                                        DPoP: proof with key B
+                                                     |
+                                                     v
+                                             +-------+-------+
+                                             |   Resource    |
+                                             |    Server     |
+                                             +---------------+
